@@ -5,12 +5,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.net.URLConnection;
 import java.net.URL;
 
 import android.os.StrictMode;
 import android.util.Log;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * @author nmagee
@@ -19,6 +25,7 @@ import android.util.Log;
 
 public class Location {
     private final String ERROR_TAG = "Location.class";
+    private final String SOURCE_CONTENT = "#mcontent > ul > li";
     private String name;
     private String locationTag;
     private final String BASE_URL = "http://www.unb.ca/academics/calendar/undergraduate/current/";
@@ -45,8 +52,19 @@ public class Location {
             String src = "";
             String line;
             while ((line = reader.readLine()) != null) {
-                //src = src + line;
-                Log.i(ERROR_TAG, line);
+                src = src + line;
+            }
+
+            List<String> facList = new ArrayList<>();
+            Document document = Jsoup.parse(src);
+            Elements content = document.select(SOURCE_CONTENT);
+            while(content.iterator().hasNext()) {
+                Element e = content.iterator().next();
+                facList.add(e.ownText());
+            }
+
+            for(String l : facList) {
+                Log.i(ERROR_TAG, l);
             }
 
             return null;
