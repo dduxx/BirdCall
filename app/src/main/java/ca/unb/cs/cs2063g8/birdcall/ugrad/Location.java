@@ -1,22 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.net.URLConnection;
-import java.net.URL;
-
-import android.os.StrictMode;
-import android.util.Log;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 /**
  * @author nmagee
@@ -24,57 +9,65 @@ import org.jsoup.select.Elements;
  */
 
 public class Location {
-    private final String ERROR_TAG = "Location.class";
-    private final String SOURCE_CONTENT = "#mcontent > ul > li";
     private String name;
-    private String locationTag;
-    private final String BASE_URL = "http://www.unb.ca/academics/calendar/undergraduate/current/";
+    private String id;
 
-    public Location(String name, String locationTag){
-        //TODO: this is super bad... just a test. get rid of this asap
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
+    public Location(String name, String id) {
         this.name = name;
-        this.locationTag = locationTag;
+        this.id = id;
     }
 
-    /**
-     * randomly select a faculty and provide suggested courses from it
-     * @return
-     */
-    public List<Course> findAll() {
-        try {
-            URLConnection site = new URL(BASE_URL + locationTag + "/").openConnection();
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(site.getInputStream()));
+    public String getName() {
+        return name;
+    }
 
-            String src = "";
-            String line;
-            while ((line = reader.readLine()) != null) {
-                src = src + line;
-            }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-            List<String> facList = new ArrayList<>();
-            Document document = Jsoup.parse(src);
-            Elements content = document.select(SOURCE_CONTENT);
-            while(content.iterator().hasNext()) {
-                Element e = content.iterator().next();
-                facList.add(e.ownText());
-            }
+    public String getId() {
+        return id;
+    }
 
-            for(String l : facList) {
-                Log.i(ERROR_TAG, l);
-            }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-            return null;
-        } catch (MalformedURLException e) {
-            Log.e(ERROR_TAG, "Parsing issue at: " + BASE_URL + locationTag + "/", e);
-            return new ArrayList<Course>();
-        } catch (IOException e) {
-            Log.e(ERROR_TAG, "Could not open connection too: "
-                    + BASE_URL + locationTag + "/", e);
-            return new ArrayList<Course>();
+    public static List<Location> getAllLocations() {
+        List<Location> locations = new ArrayList<>();
+        locations.add(new Location("Fredericton", "FR"));
+        locations.add(new Location("Saint John", "SJ"));
+        locations.add(new Location("Moncton" , "MO"));
+        return locations;
+    }
+
+    public static Location getLocationByName(String name) {
+        if(name.equalsIgnoreCase("Fredericton")){
+            return new Location("Fredericton", "FR");
+        }
+        else if(name.equalsIgnoreCase("Saint John")){
+            return new Location("Saint John", "SJ");
+        }
+        else if(name.equalsIgnoreCase("Moncton")){
+            return new Location("Moncton", "MO");
+        }
+        else{
+            throw new IllegalArgumentException("No location for name: " + name);
+        }
+    }
+
+    public static Location getLocationById(String id) {
+        if(id.equalsIgnoreCase("FR")){
+            return new Location("Fredericton", "FR");
+        }
+        else if(id.equalsIgnoreCase("SJ")){
+            return new Location("Saint John", "SJ");
+        }
+        else if(id.equalsIgnoreCase("MO")){
+            return new Location("Moncton", "MO");
+        }
+        else{
+            throw new IllegalArgumentException("No location for id: " + id);
         }
     }
 }
