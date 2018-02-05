@@ -1,31 +1,30 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import ca.unb.cs.cs2063g8.birdcall.web.UNBTimetableAccess;
 
 /**
  * @author nmagee
  * date: 2018-01-20
- * curl command to get faculty list:
- *     curl -X POST -F 'level=UG' http://es.unb.ca/apps/timetable/ajax/get-subjects.cgi
- *
- *     this command returns json of all unb faculties
+ * Faculty object representation
  */
 
 public class Faculty {
-    private final static String TAG = "Faculty.class";
-    private final static String FACULTY_SOURCE_URL =
+    private static final String TAG = "Faculty";
+    private static final String FACULTY_SOURCE_URL =
             "http://es.unb.ca/apps/timetable/ajax/get-subjects.cgi";
 
     private String name;
@@ -61,57 +60,44 @@ public class Faculty {
     }
 
     /**
-     * accesses UNB's online resources to find all of the facutly options available for undergrads
-     *     at the url: http://es.unb.ca/apps/timetable/ajax/get-subjects.cgi. Uses org.json to parse
-     *     the json response from the server.
-     * @return faculties a list of faculties
+     * accesses UNB's online resources to find all of the faculty options available for undergrads
+     *     at the url denoted by FACULTY_SOURCE_URL. Uses org.json to parse the json response from
+     *     the server.
+     * @return a list of UNB faculties
      */
     public static List<Faculty> getFaculties(){
         List<Faculty> faculties = new ArrayList<>();
-        try{
-            Log.i(TAG, "accessing faculty list at" + FACULTY_SOURCE_URL);
-            URL url = new URL(FACULTY_SOURCE_URL);
-            Map<String,Object> params = new LinkedHashMap<>();
-            params.put("level", "UG");
-
-            //building the request body
-            StringBuilder postData = new StringBuilder();
-            for (Map.Entry<String,Object> param : params.entrySet()) {
-                if (postData.length() != 0) postData.append('&');
-                postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
-                postData.append('=');
-                postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
-            }
-            byte[] postDataBytes = postData.toString().getBytes("UTF-8");
-
-            Log.i(TAG, "sending request to url");
-            //building the request headers
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-            //send body
-            conn.setDoOutput(true);
-            conn.getOutputStream().write(postDataBytes);
-
-            //parsing the response from the server
-            BufferedReader response = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-            String json = "";
-            for (int character; (character = response.read()) >= 0;){
-                json = json + (char) character;
-            }
-
-            JSONArray jsonArray = new JSONObject(json).getJSONArray("subjects");
+        try {
+            Map<String, String> formParams = new HashMap<>();
+            formParams.put("level", "UG");
+            String response = UNBTimetableAccess.getResponse(formParams, new URL(FACULTY_SOURCE_URL));
+            JSONArray jsonArray = new JSONObject(response).getJSONArray("subjects");
 
             //parse the json output and use it to make the faculty list
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject jsonFacutly = jsonArray.getJSONObject(i);
                 faculties.add(new Faculty(jsonFacutly.getString("name"), jsonFacutly.getString("id")));
             }
-        } catch (Exception e) {
-            Log.e(TAG, "unable to gather faculty information", e);
-        }
 
-        return faculties;
+            return faculties;
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "problem building the URL for: " + FACULTY_SOURCE_URL, e);
+            return faculties;
+        } catch (JSONException e){
+            Log.e(TAG, "error parsing json response from server", e);
+            return faculties;
+        } catch (NullPointerException e) {
+            Log.e(TAG, "null value detected. likely error in request", e);
+            return faculties;
+        }
+    }
+
+    /**
+     * returns a random faculty from the parsed list
+     * @return a random faculty
+     */
+    public static Faculty getRandomFaculty(){
+        List<Faculty> faculties = Faculty.getFaculties();
+        return faculties.get(new Random().nextInt(faculties.size()));
     }
 }
