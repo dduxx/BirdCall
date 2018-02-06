@@ -70,7 +70,8 @@ public class Faculty {
         try {
             Map<String, String> formParams = new HashMap<>();
             formParams.put("level", "UG");
-            String response = UNBTimetableAccess.getResponse(formParams, new URL(FACULTY_SOURCE_URL));
+            String response = UNBTimetableAccess.getResponse(
+                    formParams, new URL(FACULTY_SOURCE_URL), UNBTimetableAccess.Expected.JSON);
             JSONArray jsonArray = new JSONObject(response).getJSONArray("subjects");
 
             //parse the json output and use it to make the faculty list

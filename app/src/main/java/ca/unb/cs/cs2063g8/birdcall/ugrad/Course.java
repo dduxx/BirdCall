@@ -1,6 +1,15 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
+import android.util.Log;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import ca.unb.cs.cs2063g8.birdcall.web.UNBTimetableAccess;
 
 /**
  * @author nmagee
@@ -9,6 +18,10 @@ import java.util.List;
  */
 
 public class Course {
+    private static final String TAG = "Course";
+    private static final String COURSE_SOURCE_URL =
+            "http://es.unb.ca/apps/timetable/index.cgi";
+
     private String id;
     private Faculty faculty;
     private String section;
@@ -145,5 +158,27 @@ public class Course {
                 '}';
     }
 
+    public static List<Course> getCourseList(){
+        List<Course> courses = new ArrayList<>();
+        try{
+            Map<String, String> params = new HashMap<>();
+            params.put("action", "index");
+            params.put("noncredit", "0");
+            params.put("term", "2018/WI");
+            params.put("level", "UG");
+            //params.put("subject", "ALLSUBJECTS");
+            params.put("subject", "ADM"); //performance is WAAY better if we force faculty selection
+            params.put("location", "FR");
+            params.put("format", "CLASS");
+            String response = UNBTimetableAccess.getResponse(
+                    params, new URL(COURSE_SOURCE_URL), UNBTimetableAccess.Expected.HTML);
 
+            Log.i(TAG, response);
+            //TODO: add html parsing to this section
+        } catch(MalformedURLException e) {
+            return courses;
+        }
+
+        return courses;
+    }
 }

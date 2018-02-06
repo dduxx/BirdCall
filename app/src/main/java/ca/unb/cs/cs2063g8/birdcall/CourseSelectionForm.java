@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import java.util.List;
 
+import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
 import android.util.Log;
 
@@ -25,8 +26,11 @@ public class CourseSelectionForm extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        Faculty randomFaculty = Faculty.getRandomFaculty();
+        Course.getCourseList();
+        List<Faculty> f = Faculty.getFaculties();
 
-        Log.i("Base", randomFaculty.toString());
+        for(Faculty fac : f){
+            Log.i("BASE", fac.toString());
+        }
     }
 }

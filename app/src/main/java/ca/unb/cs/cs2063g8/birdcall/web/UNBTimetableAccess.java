@@ -30,7 +30,6 @@ public class UNBTimetableAccess {
     private final static String TAG = "UNBTimetableAccess";
     private final static String DEFAULT_ENCODING = "UTF-8";
 
-
     private UNBTimetableAccess(){
         //make it so you cannot instantiate this class
     }
@@ -42,7 +41,7 @@ public class UNBTimetableAccess {
      * @return a string response from the server. could be json or html depending on the
      *     response. if there was an issue hitting the server this will return null
      */
-    public static String getResponse(Map<String, String> formParams, URL url){
+    public static String getResponse(Map<String, String> formParams, URL url, Expected returnType){
         try {
             Log.i(TAG, "building form entries");
 
@@ -74,8 +73,29 @@ public class UNBTimetableAccess {
             String response = "";
             String line;
 
-            while ((line = reader.readLine()) != null){
-                response = response + line;
+            if(returnType == Expected.JSON){
+                while ((line = reader.readLine()) != null){
+                    response = response + line;
+                }
+            }
+            else{
+                //the parsable html contains a lot of scripts and other elements that we do not
+                //need. this will hopefully reduce the memory foot print by only copying what is
+                //within table elements
+                boolean tableOpen = false;
+                while ((line = reader.readLine()) != null){
+                    if(line.contains("<table")){
+                        tableOpen = true;
+                    }
+
+                    if(line.contains("</table>")){
+                        tableOpen = false;
+                    }
+
+                    if(tableOpen){
+                        response = response + line;
+                    }
+                }
             }
 
             return response;
@@ -86,5 +106,10 @@ public class UNBTimetableAccess {
             Log.e(TAG, "unable to open url connection at: " + url, e);
             return null;
         }
+    }
+
+    public static enum Expected {
+        JSON,
+        HTML
     }
 }
