@@ -88,12 +88,12 @@ public class UNBTimetableAccess {
                         tableOpen = true;
                     }
 
-                    if(line.contains("</table>")){
-                        tableOpen = false;
-                    }
-
                     if(tableOpen){
                         response = response + line;
+                    }
+
+                    if(line.contains("</table>")){
+                        tableOpen = false;
                     }
                 }
             }
