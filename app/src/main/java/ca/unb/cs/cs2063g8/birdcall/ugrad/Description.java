@@ -97,4 +97,14 @@ public class Description {
     public int hashCode() {
         return descriptionUrl.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Description{" +
+                "descriptionUrl=" + descriptionUrl +
+                ", description='" + description + '\'' +
+                ", prereqs='" + prereqs + '\'' +
+                ", response='" + response + '\'' +
+                '}';
+    }
 }

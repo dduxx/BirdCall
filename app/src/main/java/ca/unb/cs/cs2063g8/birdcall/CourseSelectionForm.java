@@ -26,11 +26,10 @@ public class CourseSelectionForm extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        Course.getCourseList();
-        List<Faculty> f = Faculty.getFaculties();
-
-        for(Faculty fac : f){
-            Log.i("BASE", fac.toString());
+        List<Course> courses = Course.getCourseList();
+        Log.i("BASE", "" + courses.size());
+        for(Course c : courses){
+            Log.i("BASE", c.toString());
         }
     }
 }

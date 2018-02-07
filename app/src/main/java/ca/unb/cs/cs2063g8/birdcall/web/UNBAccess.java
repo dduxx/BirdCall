@@ -73,6 +73,7 @@ public class UNBAccess {
             StringBuilder response = new StringBuilder();
             String line;
 
+            Log.i(TAG, "parsing response");
             if(returnType == Expected.JSON){
                 while ((line = reader.readLine()) != null){
                     response.append(line);
@@ -99,6 +100,7 @@ public class UNBAccess {
             }
 
             //strips whitespace between tagged elements for readability in logging
+            Log.i(TAG, "returning response from server as string");
             return response.toString().replaceAll(">\\s*<", "><");
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "encoding: " + DEFAULT_ENCODING + " is not supported", e);

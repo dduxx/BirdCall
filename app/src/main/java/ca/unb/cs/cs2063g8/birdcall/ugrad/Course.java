@@ -29,6 +29,7 @@ public class Course {
             "http://es.unb.ca/apps/timetable/index.cgi";
 
     private String id;
+    private String name;
     private Faculty faculty;
     private Integer openSeats;
     private Integer totalSeats;
@@ -40,15 +41,29 @@ public class Course {
 
     public Course(
             String id,
+            String name,
             Faculty faculty,
             Integer openSeats,
             Integer totalSeats,
             Description description){
         this.id = id;
+        this.name = name;
         this.faculty = faculty;
         this.openSeats = openSeats;
         this.totalSeats = totalSeats;
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", faculty=" + faculty +
+                ", openSeats=" + openSeats +
+                ", totalSeats=" + totalSeats +
+                ", description=" + description +
+                '}';
     }
 
     public static List<Course> getCourseList(){
@@ -73,52 +88,60 @@ public class Course {
                 Elements cells = row.getElementsByTag("td");
                 if(cells.size() == 9){
                     Iterator<Element> cellIterator = cells.iterator();
-                    String id;
+                    String id = null;
                     Faculty faculty = new Faculty("Testing adm", "ADM");
-                    Integer openSeats;
-                    Integer totalSeats;
-                    Description description;
+                    Integer openSeats = null;
+                    Integer totalSeats = null;
+                    Description description = null;
+                    String name = null;
                     /**
                      * ID	Course	Section	Title	Instructor	Days	Times	Room	Capacity / Enrollment
                      */
                     for(int i=0; i<cells.size(); i++){
                         if(i == 0){
-                            Log.i(TAG, cells.get(i).ownText());
+                            continue;
                         }
 
                         if(i == 1){
-                            Log.i(TAG, cells.get(i).ownText());
+                            Log.i(TAG, "" + i);
+                            id = cells.get(i).ownText().replace("*", "");
+                            description = new Description(cells.get(i).attr("src"));
                         }
 
                         if(i == 2){
-                            Log.i(TAG, cells.get(i).ownText());
+                            continue;
                         }
 
                         if(i == 3){
-                            Log.i(TAG, cells.get(i).ownText());
+                            continue;
                         }
 
                         if(i == 4){
-                            Log.i(TAG, cells.get(i).ownText());
+                            continue;
                         }
 
                         if(i == 5){
-                            Log.i(TAG, cells.get(i).ownText());
+                            continue;
                         }
 
                         if(i == 6){
-                            Log.i(TAG, cells.get(i).ownText());
+                            continue;
                         }
                         if(i == 7){
-                            Log.i(TAG, cells.get(i).ownText());
+                            continue;
                         }
 
                         if(i == 8){
-                            Log.i(TAG, cells.get(i).ownText());
+                            String cell = cells.get(i).ownText();
+                            totalSeats = Integer.parseInt(cell.split("/")[0]);
+                            openSeats = Integer.parseInt(cell.split("/")[1]);
                         }
 
 
                     }
+                    Course course = new Course(id, name, faculty, openSeats, totalSeats, description);
+                    Log.i(TAG, course.toString());
+                    courses.add(course);
                 }
             }
         } catch(MalformedURLException e) {
