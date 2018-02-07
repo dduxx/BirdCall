@@ -2,14 +2,20 @@ package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
 import android.util.Log;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import ca.unb.cs.cs2063g8.birdcall.web.UNBTimetableAccess;
+import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 /**
  * @author nmagee
@@ -24,138 +30,25 @@ public class Course {
 
     private String id;
     private Faculty faculty;
-    private String section;
-    private String name;
-    private String professor;
-
-    //these 2 may need to be adjusted
-    private List<String> days;
-    private String timeslots;
-
-    private String room;
-    private Integer seatsAvailable;
+    private Integer openSeats;
     private Integer totalSeats;
-    private String description;
+    private Description description;
 
-    public Course(String id, Faculty faculty, String section, String name, String professor,
-                  List<String> days, String timeslots, String room, Integer seatsAvailable,
-                  Integer totalSeats, String description) {
+    public Course(){
+
+    }
+
+    public Course(
+            String id,
+            Faculty faculty,
+            Integer openSeats,
+            Integer totalSeats,
+            Description description){
         this.id = id;
         this.faculty = faculty;
-        this.section = section;
-        this.name = name;
-        this.professor = professor;
-        this.days = days;
-        this.timeslots = timeslots;
-        this.room = room;
-        this.seatsAvailable = seatsAvailable;
+        this.openSeats = openSeats;
         this.totalSeats = totalSeats;
         this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Faculty getFaculty() {
-        return faculty;
-    }
-
-    public void setFaculty(Faculty faculty) {
-        this.faculty = faculty;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
-        this.section = section;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getProfessor() {
-        return professor;
-    }
-
-    public void setProfessor(String professor) {
-        this.professor = professor;
-    }
-
-    public List<String> getDays() {
-        return days;
-    }
-
-    public void setDays(List<String> days) {
-        this.days = days;
-    }
-
-    public String getTimeslots() {
-        return timeslots;
-    }
-
-    public void setTimeslots(String timeslots) {
-        this.timeslots = timeslots;
-    }
-
-    public String getRoom() {
-        return room;
-    }
-
-    public void setRoom(String room) {
-        this.room = room;
-    }
-
-    public Integer getSeatsAvailable() {
-        return seatsAvailable;
-    }
-
-    public void setSeatsAvailable(Integer seatsAvailable) {
-        this.seatsAvailable = seatsAvailable;
-    }
-
-    public Integer getTotalSeats() {
-        return totalSeats;
-    }
-
-    public void setTotalSeats(Integer totalSeats) {
-        this.totalSeats = totalSeats;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return "Course{" +
-                "id='" + id + '\'' +
-                ", faculty=" + faculty +
-                ", section='" + section + '\'' +
-                ", name='" + name + '\'' +
-                ", professor='" + professor + '\'' +
-                ", days=" + days +
-                ", timeslots='" + timeslots + '\'' +
-                ", room='" + room + '\'' +
-                ", seatsAvailable=" + seatsAvailable +
-                ", totalSeats=" + totalSeats +
-                ", description='" + description + '\'' +
-                '}';
     }
 
     public static List<Course> getCourseList(){
@@ -170,11 +63,64 @@ public class Course {
             params.put("subject", "ADM"); //performance is WAAY better if we force faculty selection
             params.put("location", "FR");
             params.put("format", "CLASS");
-            String response = UNBTimetableAccess.getResponse(
-                    params, new URL(COURSE_SOURCE_URL), UNBTimetableAccess.Expected.HTML);
+            String response = UNBAccess.getResponse(
+                    params, new URL(COURSE_SOURCE_URL), UNBAccess.Expected.HTML);
 
-            Log.i(TAG, response);
-            //TODO: add html parsing to this section
+            Document doc = Jsoup.parse(response);
+            Iterator<Element> rows = doc.getElementsByTag("tr").iterator();
+            while(rows.hasNext()){
+                Element row = rows.next();
+                Elements cells = row.getElementsByTag("td");
+                if(cells.size() == 9){
+                    Iterator<Element> cellIterator = cells.iterator();
+                    String id;
+                    Faculty faculty = new Faculty("Testing adm", "ADM");
+                    Integer openSeats;
+                    Integer totalSeats;
+                    Description description;
+                    /**
+                     * ID	Course	Section	Title	Instructor	Days	Times	Room	Capacity / Enrollment
+                     */
+                    for(int i=0; i<cells.size(); i++){
+                        if(i == 0){
+                            Log.i(TAG, cells.get(i).ownText());
+                        }
+
+                        if(i == 1){
+                            Log.i(TAG, cells.get(i).ownText());
+                        }
+
+                        if(i == 2){
+                            Log.i(TAG, cells.get(i).ownText());
+                        }
+
+                        if(i == 3){
+                            Log.i(TAG, cells.get(i).ownText());
+                        }
+
+                        if(i == 4){
+                            Log.i(TAG, cells.get(i).ownText());
+                        }
+
+                        if(i == 5){
+                            Log.i(TAG, cells.get(i).ownText());
+                        }
+
+                        if(i == 6){
+                            Log.i(TAG, cells.get(i).ownText());
+                        }
+                        if(i == 7){
+                            Log.i(TAG, cells.get(i).ownText());
+                        }
+
+                        if(i == 8){
+                            Log.i(TAG, cells.get(i).ownText());
+                        }
+
+
+                    }
+                }
+            }
         } catch(MalformedURLException e) {
             return courses;
         }

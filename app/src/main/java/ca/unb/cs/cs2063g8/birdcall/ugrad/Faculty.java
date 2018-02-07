@@ -14,7 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import ca.unb.cs.cs2063g8.birdcall.web.UNBTimetableAccess;
+import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 /**
  * @author nmagee
@@ -70,8 +70,8 @@ public class Faculty {
         try {
             Map<String, String> formParams = new HashMap<>();
             formParams.put("level", "UG");
-            String response = UNBTimetableAccess.getResponse(
-                    formParams, new URL(FACULTY_SOURCE_URL), UNBTimetableAccess.Expected.JSON);
+            String response = UNBAccess.getResponse(
+                    formParams, new URL(FACULTY_SOURCE_URL), UNBAccess.Expected.JSON);
             JSONArray jsonArray = new JSONObject(response).getJSONArray("subjects");
 
             //parse the json output and use it to make the faculty list
