@@ -8,6 +8,7 @@ import android.os.Bundle;
 import java.util.List;
 
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
+import ca.unb.cs.cs2063g8.birdcall.ugrad.Description;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
 import android.util.Log;
 
@@ -16,6 +17,7 @@ import android.util.Log;
  *
  */
 public class CourseSelectionForm extends AppCompatActivity {
+    private static final String TAG = "CourseSelectionForm";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +29,10 @@ public class CourseSelectionForm extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         List<Course> courses = Course.getCourseList();
-        Log.i("BASE", "" + courses.size());
-        for(Course c : courses){
-            Log.i("BASE", c.toString());
-        }
+        Log.i(TAG, "" + courses.size());//just seeing if the list is empty
+        Description description = courses.get(0).getDescription();//get a description for a course
+        Log.i(TAG, description.getPrereqs());//see if it has prereqs
+        Log.i(TAG, description.getDescription());//see if it has description
+
     }
 }

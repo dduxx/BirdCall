@@ -32,7 +32,6 @@ public class Course {
     private String name;
     private Faculty faculty;
     private Integer openSeats;
-    private Integer totalSeats;
     private Description description;
 
     public Course(){
@@ -44,13 +43,51 @@ public class Course {
             String name,
             Faculty faculty,
             Integer openSeats,
-            Integer totalSeats,
             Description description){
         this.id = id;
         this.name = name;
         this.faculty = faculty;
         this.openSeats = openSeats;
-        this.totalSeats = totalSeats;
+        this.description = description;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
+
+    public Integer getOpenSeats() {
+        return openSeats;
+    }
+
+    public void setOpenSeats(Integer openSeats) {
+        this.openSeats = openSeats;
+    }
+
+    public Description getDescription() {
+        return description;
+    }
+
+    public void setDescription(Description description) {
         this.description = description;
     }
 
@@ -61,8 +98,7 @@ public class Course {
                 ", name='" + name + '\'' +
                 ", faculty=" + faculty +
                 ", openSeats=" + openSeats +
-                ", totalSeats=" + totalSeats +
-                ", description=" + description +
+                ", description=" + description.getDescriptionUrl().toString() +
                 '}';
     }
 
@@ -75,76 +111,38 @@ public class Course {
             params.put("term", "2018/WI");
             params.put("level", "UG");
             //params.put("subject", "ALLSUBJECTS");
-            params.put("subject", "ADM"); //performance is WAAY better if we force faculty selection
+            params.put("subject", "ANTH"); //performance is WAAY better if we force faculty selection
             params.put("location", "FR");
             params.put("format", "CLASS");
             String response = UNBAccess.getResponse(
                     params, new URL(COURSE_SOURCE_URL), UNBAccess.Expected.HTML);
 
+
             Document doc = Jsoup.parse(response);
-            Iterator<Element> rows = doc.getElementsByTag("tr").iterator();
+            Iterator<Element> rows = doc.getElementsByTag("tbody").first().children().iterator();
+
             while(rows.hasNext()){
-                Element row = rows.next();
-                Elements cells = row.getElementsByTag("td");
-                if(cells.size() == 9){
-                    Iterator<Element> cellIterator = cells.iterator();
-                    String id = null;
-                    Faculty faculty = new Faculty("Testing adm", "ADM");
-                    Integer openSeats = null;
-                    Integer totalSeats = null;
-                    Description description = null;
-                    String name = null;
-                    /**
-                     * ID	Course	Section	Title	Instructor	Days	Times	Room	Capacity / Enrollment
-                     */
-                    for(int i=0; i<cells.size(); i++){
-                        if(i == 0){
-                            continue;
-                        }
+                Elements cells = rows.next().children();
+                if(cells.size() != 9){
+                    continue;
+                }
+                else{
+                    String id = cells.get(1).text().replace("*", "");
+                    String name = cells.get(3).text();
+                    Faculty faculty = new Faculty("Anthropology","ANTH");
+                    Integer total = Integer.parseInt(cells.get(8).text().replaceAll("\\s", "").split("/")[0]);
+                    Integer enrollment = Integer.parseInt(cells.get(8).text().replaceAll("\\s", "").split("/")[1]);
+                    Integer openSeats = total - enrollment;
+                    String url = cells.get(1).getElementsByAttribute("href").first().attr("href");
+                    Description description = new Description(new URL(url));
 
-                        if(i == 1){
-                            Log.i(TAG, "" + i);
-                            id = cells.get(i).ownText().replace("*", "");
-                            description = new Description(cells.get(i).attr("src"));
-                        }
+                    courses.add(new Course(id, name, faculty, openSeats, description));
 
-                        if(i == 2){
-                            continue;
-                        }
-
-                        if(i == 3){
-                            continue;
-                        }
-
-                        if(i == 4){
-                            continue;
-                        }
-
-                        if(i == 5){
-                            continue;
-                        }
-
-                        if(i == 6){
-                            continue;
-                        }
-                        if(i == 7){
-                            continue;
-                        }
-
-                        if(i == 8){
-                            String cell = cells.get(i).ownText();
-                            totalSeats = Integer.parseInt(cell.split("/")[0]);
-                            openSeats = Integer.parseInt(cell.split("/")[1]);
-                        }
-
-
-                    }
-                    Course course = new Course(id, name, faculty, openSeats, totalSeats, description);
-                    Log.i(TAG, course.toString());
-                    courses.add(course);
                 }
             }
+
         } catch(MalformedURLException e) {
+            Log.e(TAG, e.getMessage(), e);
             return courses;
         }
 

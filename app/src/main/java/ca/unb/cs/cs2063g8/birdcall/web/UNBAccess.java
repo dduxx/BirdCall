@@ -35,11 +35,11 @@ public class UNBAccess {
     }
 
     /**
-     *
+     * builds a request header from form parameters and sends it to a url
      * @param formParams parameters sent in http request from the form on the unb timetables site
      * @param url the url to send the request
      * @return a string response from the server. could be json or html depending on the
-     *     response. if there was an issue hitting the server this will return null
+     *     response. if there was an issue hitting the server this will return the empty string
      */
     public static String getResponse(Map<String, String> formParams, URL url, Expected returnType){
         try {
@@ -70,45 +70,78 @@ public class UNBAccess {
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(conn.getInputStream(), DEFAULT_ENCODING));
 
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            Log.i(TAG, "parsing response");
-            if(returnType == Expected.JSON){
-                while ((line = reader.readLine()) != null){
-                    response.append(line);
-                }
-            }
-            else{
-                //the parsable html contains a lot of scripts and other elements that we do not
-                //need. this will hopefully reduce the memory foot print by only copying what is
-                //within table elements
-                boolean tableOpen = false;
-                while ((line = reader.readLine()) != null){
-                    if(line.contains("<table") && !line.contains("id=\"term-summary\"")){
-                        tableOpen = true;
-                    }
-
-                    if(tableOpen){
-                        response.append(line);
-                    }
-
-                    if(line.contains("</table>")){
-                        tableOpen = false;
-                    }
-                }
-            }
-
-            //strips whitespace between tagged elements for readability in logging
-            Log.i(TAG, "returning response from server as string");
-            return response.toString().replaceAll(">\\s*<", "><");
+            return parse(reader, returnType);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "encoding: " + DEFAULT_ENCODING + " is not supported", e);
-            return null;
+            return "";
         } catch (IOException e){
             Log.e(TAG, "unable to open url connection at: " + url, e);
-            return null;
+            return "";
         }
+    }
+
+    /**
+     * goes to a url and gets a response. this method takes no form parameters
+     * @param url the url to get a response from
+     * @param returnType the type of expected response (HTML, JSON)
+     * @return returns a string response from the url. if no response returns the empty string
+     */
+    public static String getResponse(URL url, Expected returnType) {
+        try{
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), DEFAULT_ENCODING));
+
+            return parse(reader, returnType);
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "encoding: " + DEFAULT_ENCODING + " is not supported", e);
+            return "";
+        } catch (IOException e){
+            Log.e(TAG, "unable to open url connection at: " + url, e);
+            return "";
+        }
+    }
+
+    /**
+     * simplified
+     * @param reader
+     * @param returnType
+     * @return
+     * @throws IOException
+     */
+    private static String parse(BufferedReader reader, Expected returnType) throws IOException{
+        StringBuilder response = new StringBuilder();
+        String line;
+
+        Log.i(TAG, "parsing response");
+        if(returnType == Expected.JSON){
+            while ((line = reader.readLine()) != null){
+                response.append(line);
+            }
+        }
+        else{
+            //the parsable html contains a lot of scripts and other elements that we do not
+            //need. this will hopefully reduce the memory foot print by only copying what is
+            //within table elements
+            boolean tableOpen = false;
+            while ((line = reader.readLine()) != null){
+                if(line.contains("<table") && !line.contains("id=\"term-summary\"")){
+                    tableOpen = true;
+                }
+
+                if(tableOpen){
+                    response.append(line);
+                }
+
+                if(line.contains("</table>")){
+                    tableOpen = false;
+                }
+            }
+        }
+
+        //strips whitespace between tagged elements for readability in logging
+        Log.i(TAG, "returning response from server as string");
+        return response.toString().replaceAll(">\\s*<", "><");
     }
 
     public enum Expected {

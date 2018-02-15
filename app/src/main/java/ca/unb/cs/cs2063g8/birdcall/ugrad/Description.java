@@ -2,6 +2,7 @@ package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.net.MalformedURLException;
@@ -16,9 +17,6 @@ import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
  */
 
 public class Description {
-    private final String DESCRIPTION_SELECTOR =
-            "#mcontent > table.ugradcal.large-only > tbody > tr > td > course_description > p";
-    private final String PREREQ_SELECTOR = "#mcontent > table.ugradcal.large-only > tbody > tr > td > course_prereq > p";
     private URL descriptionUrl;
     private String description;
     private String prereqs;
@@ -29,7 +27,7 @@ public class Description {
     }
 
     public Description(URL url){
-        this.descriptionUrl = descriptionUrl;
+        this.descriptionUrl = url;
     }
 
     public void setDescription(){
@@ -38,8 +36,8 @@ public class Description {
         }
 
         Document doc = Jsoup.parse(response);
-        Elements elements = doc.select(DESCRIPTION_SELECTOR);
-        this.description = elements.get(0).ownText();
+        Element description = doc.getElementsByTag("course_description").first();
+        this.description = description.text();
     }
 
     public void setPrereqs(){
@@ -47,8 +45,13 @@ public class Description {
             setResponse();
         }
         Document doc = Jsoup.parse(response);
-        Elements elements = doc.select(PREREQ_SELECTOR);
-        this.prereqs = elements.get(0).ownText();
+        Elements prereqTag = doc.getElementsByTag("course_prereq");
+        if(prereqTag.isEmpty()){
+            this.prereqs = "[NO PREREQS]";
+        }
+        else{
+            this.prereqs = prereqTag.first().text();
+        }
     }
 
     public String getDescription(){
@@ -79,8 +82,16 @@ public class Description {
 
     public void setResponse(){
         Map<String, String> params = new HashMap<>();
-        String response = UNBAccess.getResponse(params, descriptionUrl, UNBAccess.Expected.HTML);
+        String response = UNBAccess.getResponse(descriptionUrl, UNBAccess.Expected.HTML);
         this.response = response;
+    }
+
+    public String getResponse(){
+        if(response == null){
+            setResponse();
+        }
+
+        return this.response;
     }
 
     @Override
