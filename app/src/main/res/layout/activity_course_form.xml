@@ -7,24 +7,27 @@
     android:orientation="vertical"
     tools:context="ca.unb.cs.cs2063g8.birdcall.CourseSelectionForm">
 
-    <android.support.design.widget.TextInputEditText
+    <Spinner
+        android:id="@+id/location_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fredericton"
-        android:textAlignment="center" />
+        android:textAlignment="center"/>
 
-    <android.support.design.widget.TextInputEditText
+    <Spinner
+        android:id="@+id/faculty_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ADM"
-        android:textAlignment="center" />
+        android:textAlignment="center"/>
+
+    <Spinner
+        android:id="@+id/level_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"/>
 
     <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button"
-        android:layout_weight="1"/>
-
-
+        android:text="Button" />
 </LinearLayout>
