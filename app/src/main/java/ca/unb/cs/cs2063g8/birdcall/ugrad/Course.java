@@ -102,20 +102,24 @@ public class Course {
                 '}';
     }
 
-    public static List<Course> getCourseList(){
+    /**
+     * gets a course list based on certain form parameters
+     *     examples of possible params
+     *         action=index
+     *         noncredit=0
+     *         term=2018/WI
+     *         level=UG
+     *         subject=ANTH
+     *         location=FR
+     *         format=CLASS
+     * @param formParams
+     * @return the full list of courses
+     */
+    public static List<Course> getCourseList(String... formParams){
         List<Course> courses = new ArrayList<>();
         try{
-            Map<String, String> params = new HashMap<>();
-            params.put("action", "index");
-            params.put("noncredit", "0");
-            params.put("term", "2018/WI");
-            params.put("level", "UG");
-            //params.put("subject", "ALLSUBJECTS");
-            params.put("subject", "ANTH"); //performance is WAAY better if we force faculty selection
-            params.put("location", "FR");
-            params.put("format", "CLASS");
             String response = UNBAccess.getResponse(
-                    params, new URL(COURSE_SOURCE_URL), UNBAccess.Expected.HTML);
+                    new URL(COURSE_SOURCE_URL), UNBAccess.Expected.HTML, formParams);
 
 
             Document doc = Jsoup.parse(response);

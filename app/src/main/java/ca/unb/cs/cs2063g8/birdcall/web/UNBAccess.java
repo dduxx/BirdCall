@@ -1,5 +1,6 @@
 package ca.unb.cs.cs2063g8.birdcall.web;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -41,19 +42,17 @@ public class UNBAccess {
      * @return a string response from the server. could be json or html depending on the
      *     response. if there was an issue hitting the server this will return the empty string
      */
-    public static String getResponse(Map<String, String> formParams, URL url, Expected returnType){
+    public static String getResponse(URL url, Expected returnType, String... formParams){
         try {
             Log.i(TAG, "building form entries");
-
             StringBuilder formData = new StringBuilder();
-
-            for (Map.Entry<String, String> param : formParams.entrySet()) {
-                if (formData.length() != 0) {
-                    formData.append('&');
+            for(int i=0; i<formParams.length; i++){
+                if(i == 0) {
+                    formData.append(formParams[i]);
                 }
-                formData.append(URLEncoder.encode(param.getKey(), DEFAULT_ENCODING));
-                formData.append('=');
-                formData.append(URLEncoder.encode(param.getValue(), DEFAULT_ENCODING));
+                else{
+                    formData.append("&" + formParams[i]);
+                }
             }
 
             byte[] formBytes = formData.toString().getBytes(DEFAULT_ENCODING);
@@ -103,10 +102,10 @@ public class UNBAccess {
     }
 
     /**
-     * simplified
-     * @param reader
+     * parse a given buffered readers output based on the return type
+     * @param reader source of data
      * @param returnType
-     * @return
+     * @return the parsed response
      * @throws IOException
      */
     private static String parse(BufferedReader reader, Expected returnType) throws IOException{

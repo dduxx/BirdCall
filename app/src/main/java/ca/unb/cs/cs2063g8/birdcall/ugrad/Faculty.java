@@ -65,13 +65,12 @@ public class Faculty {
      *     the server.
      * @return a list of UNB faculties
      */
-    public static List<Faculty> getFaculties(){
+    public static List<Faculty> getFaculties(String... formParams){
         List<Faculty> faculties = new ArrayList<>();
         try {
-            Map<String, String> formParams = new HashMap<>();
-            formParams.put("level", "UG");
-            String response = UNBAccess.getResponse(
-                    formParams, new URL(FACULTY_SOURCE_URL), UNBAccess.Expected.JSON);
+            //String formParams = ("level=UG");
+            String response = UNBAccess.getResponse(new URL(FACULTY_SOURCE_URL),
+                    UNBAccess.Expected.JSON, formParams);
             JSONArray jsonArray = new JSONObject(response).getJSONArray("subjects");
 
             //parse the json output and use it to make the faculty list
@@ -94,11 +93,11 @@ public class Faculty {
     }
 
     /**
-     * returns a random faculty from the parsed list
-     * @return a random faculty
+     * get a random faculty from a list of faculties
+     * @param faculties the list of available faculties
+     * @return a single random faculty
      */
-    public static Faculty getRandomFaculty(){
-        List<Faculty> faculties = Faculty.getFaculties();
+    public static Faculty getRandomFaculty(List<Faculty> faculties){
         return faculties.get(new Random().nextInt(faculties.size()));
     }
 }
