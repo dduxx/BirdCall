@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
@@ -152,4 +153,21 @@ public class Course {
 
         return courses;
     }
+
+    public static List<Course> randomizer(List<Course> fullList){
+        final int MAX_LIST_SIZE = 5;
+        List<Course> suggestions = new ArrayList<>();
+        //Remember to go back for other faculties
+        if(fullList.size() <= 5){
+            return fullList;
+        }
+        else{
+            for(int i = 0; i < MAX_LIST_SIZE; i++){
+                suggestions.add(fullList.get(new Random().nextInt(fullList.size())));
+            }
+            return suggestions;
+        }
+
+    }
+    //TODO add a checking method that takes in the suggestion and compares against the old array
 }

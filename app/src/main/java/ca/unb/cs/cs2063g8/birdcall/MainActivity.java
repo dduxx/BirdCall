@@ -1,6 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_form);
 
-        submitButton = findViewById(R.id.button);
+        submitButton = findViewById(R.id.submit_button);
         populateLocationSpinner();
         populateLevelSpinner();
         populateFacultySpinner();
@@ -55,10 +56,8 @@ public class MainActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(
-                        getApplicationContext(),
-                        "Jason needs to do his activity",
-                        Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getApplicationContext(), SuggestionListActivity.class);
+                startActivity(intent);
             }
         });
     }
