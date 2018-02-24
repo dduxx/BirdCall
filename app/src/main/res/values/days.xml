@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="days_array">
+        <item>Any Day</item>
+        <item>(M) Monday</item>
+        <item>(T) Tuesday</item>
+        <item>(W) Wednesday</item>
+        <item>(Th) Thursday</item>
+        <item>(F) Friday</item>
+        <item>M-W-F</item>
+        <item>M-W</item>
+        <item>T-Th</item>
+    </string-array>
+</resources>

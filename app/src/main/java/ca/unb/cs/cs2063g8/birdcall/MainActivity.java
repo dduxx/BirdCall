@@ -18,7 +18,9 @@ import ca.unb.cs.cs2063g8.birdcall.ugrad.Location;
 
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -30,6 +32,13 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private List<Faculty> facultyList;
+    private Spinner levelSpinner;
+    private Spinner locationSpinner;
+    private Spinner facultySpinner;
+    private Spinner timeSpinner;
+    private Spinner daySpinner;
+    private Button submitButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,16 +49,29 @@ public class MainActivity extends AppCompatActivity {
         actionBar.setTitle(Html.fromHtml("<font color='"
                 + Color.BLACK + "'>BirdCall</font>"));
 
+        submitButton = (Button) findViewById(R.id.button);
         populateLocationSpinner();
         populateLevelSpinner();
         populateFacultySpinner();
+        populateDaySpinner();
+        populateTimeSpinner();
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Jason needs to do his activity",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**
      * populates the level drop down. ie: 1000, 2000, etc. populates it from a list in resources
      */
     private void populateLevelSpinner(){
-        Spinner levelSpinner = findViewById(R.id.level_spinner);
+        levelSpinner = findViewById(R.id.level_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.level_array, android.R.layout.simple_spinner_item);
@@ -59,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
         levelSpinner.setAdapter(adapter);
     }
 
+    /**
+     * populates the locations. these are hard coded right now. in the future this should
+     *     try to detect location
+     */
     private void populateLocationSpinner(){
         List<Location> locations = Location.getAllLocations();
 
@@ -67,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         for(Location l : locations){
             locationNames.add(l.getName());
         }
-        Spinner locationSpinner = findViewById(R.id.location_spinner);
+        locationSpinner = findViewById(R.id.location_spinner);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, locationNames);
@@ -76,6 +102,10 @@ public class MainActivity extends AppCompatActivity {
         locationSpinner.setAdapter(adapter);
     }
 
+    /**
+     * populates the faculty spinner. must use an async task. if no connection this will fail and
+     *     a toast notifying the user that they have no network is displayed
+     */
     private void populateFacultySpinner(){
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -85,15 +115,37 @@ public class MainActivity extends AppCompatActivity {
                 activeNetwork.isConnectedOrConnecting();
 
         if(isConnected){
-            FacultyDownloader downloaderTask = new FacultyDownloader();
-            downloaderTask.execute();
+            new FacultyDownloader().execute();
         }
         else{
-            CharSequence text = "No Network Detected";
-            int duration = Toast.LENGTH_SHORT;
-
-            Toast.makeText(getApplicationContext(), text, duration).show();
+            Toast.makeText(getApplicationContext(),
+                    "No Network Detected", Toast.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * populate the time drop down menu from values stored in xml
+     */
+    private void populateTimeSpinner(){
+        timeSpinner = findViewById(R.id.time_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.time_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        timeSpinner.setAdapter(adapter);
+    }
+
+    private void populateDaySpinner(){
+        daySpinner = findViewById(R.id.day_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.days_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        daySpinner.setAdapter(adapter);
     }
 
     public class FacultyDownloader extends AsyncTask<String, Integer, String> {
@@ -106,11 +158,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPreExecute() {
-            Log.i(TAG, "Not yet implemented onPreExecute()");
-        }
-
-        @Override
         protected void onPostExecute(String result) {
             Log.i(TAG, result);
             ArrayList<String> faculties = new ArrayList<>();
@@ -119,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 faculties.add(f.getName());
             }
 
-            Spinner facultySpinner = findViewById(R.id.faculty_spinner);
+            facultySpinner = findViewById(R.id.faculty_spinner);
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
                     MainActivity.this, android.R.layout.simple_spinner_item, faculties);
