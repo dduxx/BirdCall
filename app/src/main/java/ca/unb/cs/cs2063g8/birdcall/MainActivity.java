@@ -44,12 +44,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_form);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.RED));
-        actionBar.setTitle(Html.fromHtml("<font color='"
-                + Color.BLACK + "'>BirdCall</font>"));
 
-        submitButton = (Button) findViewById(R.id.button);
+        submitButton = findViewById(R.id.button);
         populateLocationSpinner();
         populateLevelSpinner();
         populateFacultySpinner();

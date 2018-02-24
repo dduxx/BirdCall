@@ -7,11 +7,12 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="BirdCall"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:theme="@style/BirdCall_theme">
+        <activity android:name=".MainActivity"
+            android:theme="@style/BirdCall_theme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
