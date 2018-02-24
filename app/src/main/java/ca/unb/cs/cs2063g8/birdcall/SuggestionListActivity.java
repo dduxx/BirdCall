@@ -1,9 +1,13 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +21,23 @@ import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
  * once criteria are selected this activity will display the list of courses
  */
 
-public class SuggestionListActivity {
+public class SuggestionListActivity extends AppCompatActivity {
     private final String TAG = "SuggestionListActivity";
     private List<Course> courseList;
+    private TextView courseIdText;
+    private TextView courseNameText;
+    private TextView courseSeatsText;
+    private Button rerollButton;
+
+    @Override
+    public void onCreate(Bundle savedInstance){
+        super.onCreate(savedInstance);
+        setContentView(R.layout.activity_course_suggestion);
+
+
+
+
+    }
 
 
     /**
@@ -28,6 +46,7 @@ public class SuggestionListActivity {
      * async task to download the course list from the UNB site
      */
     public class CourseDownloader extends AsyncTask<String, Integer, String> {
+
 
         @Override
         protected String doInBackground(String... requestParams) {
