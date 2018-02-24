@@ -20,7 +20,7 @@
             android:layout_marginLeft="90dp"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:text="Course ID"
+            android:text="Course_ID"
             />
 
         <TextView
@@ -31,7 +31,7 @@
             android:layout_marginRight="40dp"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:text="Course Name"
+            android:text="Course_Name"
         />
 
         <TextView
@@ -41,7 +41,7 @@
             android:layout_marginLeft="40dp"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:text="Seats Open"
+            android:text="Seats_Open"
         />
 
     </LinearLayout>
@@ -95,7 +95,7 @@
             android:layout_marginLeft="90dp"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:text="Course ID"
+            android:text="Days_Offered"
             />
 
         <TextView
@@ -106,7 +106,7 @@
             android:layout_marginRight="40dp"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:text="Course Name"
+            android:text="Time_Slot"
             />
 
         <TextView
@@ -116,7 +116,7 @@
             android:layout_marginLeft="40dp"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:text="Seats Open"
+            android:text="Professor"
             />
 
 
