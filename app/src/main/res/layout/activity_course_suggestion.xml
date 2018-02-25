@@ -9,7 +9,7 @@
     <ListView
         android:layout_width="match_parent"
         android:id="@+id/course_list"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
     </ListView>
 
@@ -17,9 +17,12 @@
 
     <Button
         android:id="@+id/reroll_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Reroll"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
         tools:layout_editor_absoluteX="147dp"
         tools:layout_editor_absoluteY="423dp" />
 </LinearLayout>
