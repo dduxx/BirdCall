@@ -1,6 +1,4 @@
 package ca.unb.cs.cs2063g8.birdcall;
-
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,18 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
-import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
 
 /**
  * @author jason
@@ -37,7 +27,6 @@ public class SuggestionListActivity extends AppCompatActivity {
     private List<Course> courseList;
     private Button rerollButton;
     private ListView mListView;
-
 
     @Override
     public void onCreate(Bundle savedInstance){
@@ -53,12 +42,7 @@ public class SuggestionListActivity extends AppCompatActivity {
                 populate();
             }
         });
-
-
-
-
         populate();
-
     }
 
     private void populate(){
@@ -69,8 +53,6 @@ public class SuggestionListActivity extends AppCompatActivity {
                 "subject=ANTH",
                 "location=FR",
                 "format=CLASS");
-
-
     }
 
 
