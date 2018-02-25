@@ -1,6 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
@@ -49,7 +50,26 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_3);
         courseDescription = findViewById(R.id.course_full_description_id);
         prereqs = findViewById(R.id.prereqs_id);
-        new DescriptionDownloader().execute("http://www.unb.ca/academics/calendar/undergraduate/current/frederictoncourses/anthropology/anth-2114.html");
+        Intent intent = this.getIntent();
+        courseID = findViewById(R.id.course_id);
+        courseName = findViewById(R.id.course_name_id);
+        seatsOpen = findViewById(R.id.seats_open_id);
+        daysOffered = findViewById(R.id.days_offered_id);
+        timeSlot = findViewById(R.id.time_slot_id);
+        professor = findViewById(R.id.professor_id);
+
+
+
+        new DescriptionDownloader().execute(intent.getStringExtra(Course.DESCRIPTION));
+        courseID.setText(Course.COURSE_ID);
+        courseName.setText(Course.COURSE_NAME);
+        seatsOpen.setText(Course.SEATS_OPEN);
+        daysOffered.setText("NA");
+        timeSlot.setText("NA");
+        professor.setText("NA");
+
+
+
     }
     public class DescriptionDownloader extends AsyncTask<String, Integer, String> {
        protected String doInBackground(String... params) {
