@@ -28,6 +28,13 @@ public class Course {
     private static final String TAG = "Course";
     private static final String COURSE_SOURCE_URL =
             "http://es.unb.ca/apps/timetable/index.cgi";
+    public static final String COURSE_ID ="COURSE_ID";
+    public static final String COURSE_NAME="COURSE_NAME";
+    public static final String SEATS_OPEN="SEATS_OPEN";
+    public static final String DESCRIPTION="DESCRIPTION";
+    public static final String DAYS_OFFERED="DAYS_OFFERED";
+    public static final String TIME_SLOT="TIME_SLOT";
+    public static final String PROFESSOR="PROFESSOR";
 
     private String id;
     private String name;

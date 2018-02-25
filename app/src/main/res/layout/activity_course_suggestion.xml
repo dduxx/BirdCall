@@ -24,6 +24,6 @@
         android:layout_marginTop="25dp"
         android:layout_marginLeft="7dp"
         android:layout_marginRight="7dp"
-        tools:layout_editor_absoluteX="147dp"
-        tools:layout_editor_absoluteY="423dp" />
+        
+         />
 </LinearLayout>

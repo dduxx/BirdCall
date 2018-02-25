@@ -2,6 +2,7 @@ package ca.unb.cs.cs2063g8.birdcall;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -113,7 +114,7 @@ public class SuggestionListActivity extends AppCompatActivity {
             this.courses = courses;
         }
 
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             View v = convertView;
 
             if (v == null) {
@@ -129,9 +130,23 @@ public class SuggestionListActivity extends AppCompatActivity {
                 id.setText(courses.get(position).getId());
                 name.setText(courses.get(position).getName());
                 seats.setText("" + courses.get(position).getOpenSeats());
+
+                v.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        Intent intent = new Intent(getApplicationContext(), CourseDescriptionActivity.class);
+                        intent.putExtra(Course.COURSE_ID, courses.get(position).getId());
+                        intent.putExtra(Course.COURSE_NAME,courses.get(position).getName());
+                        intent.putExtra(Course.SEATS_OPEN,courses.get(position).getOpenSeats());
+                        intent.putExtra(Course.DESCRIPTION,courses.get(position).getDescription().getDescriptionUrl().toString());
+                        startActivity(intent);
+
+                    }
+                });
             }
 
             return v;
         }
+
     }
 }
