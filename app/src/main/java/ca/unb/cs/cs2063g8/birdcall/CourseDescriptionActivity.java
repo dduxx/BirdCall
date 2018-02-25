@@ -32,7 +32,7 @@ public class CourseDescriptionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_3);
+        setContentView(R.layout.course_description_activity);
         courseDescription = findViewById(R.id.course_full_description_id);
         prereqs = findViewById(R.id.prereqs_id);
         Intent intent = this.getIntent();
