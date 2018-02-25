@@ -2,12 +2,9 @@ package ca.unb.cs.cs2063g8.birdcall;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -17,7 +14,6 @@ import java.util.List;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Location;
 
-import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -44,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_course_form);
+        setContentView(R.layout.main_activity);
 
         submitButton = findViewById(R.id.submit_button);
         populateLocationSpinner();
