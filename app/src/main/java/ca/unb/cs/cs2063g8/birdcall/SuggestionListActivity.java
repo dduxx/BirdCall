@@ -119,7 +119,7 @@ public class SuggestionListActivity extends AppCompatActivity {
                         Intent intent = new Intent(getApplicationContext(), CourseDescriptionActivity.class);
                         intent.putExtra(Course.COURSE_ID, courses.get(position).getId());
                         intent.putExtra(Course.COURSE_NAME,courses.get(position).getName());
-                        intent.putExtra(Course.SEATS_OPEN,courses.get(position).getOpenSeats());
+                        intent.putExtra(Course.SEATS_OPEN, courses.get(position).getOpenSeats().toString());
                         intent.putExtra(Course.DESCRIPTION,courses.get(position).getDescription().getDescriptionUrl().toString());
                         startActivity(intent);
 

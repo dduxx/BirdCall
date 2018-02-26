@@ -6,20 +6,18 @@
     android:orientation="vertical"
     >
     <!-- Upper Content-->
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="20"
-        android:orientation="horizontal">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
 
         <TextView
             android:id="@+id/course_id"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="90dp"
-            android:layout_marginTop="10dp"
-            android:textAlignment="center"
+            android:layout_alignParentLeft="true"
             android:text="Course_ID"
             />
 
@@ -27,74 +25,59 @@
             android:id="@+id/course_name_id"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="40dp"
-            android:layout_marginTop="10dp"
             android:textAlignment="center"
+            android:layout_centerInParent="true"
             android:text="Course_Name"
-        />
+            />
 
         <TextView
             android:id="@+id/seats_open_id"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="10dp"
-            android:textAlignment="center"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
             android:text="Seats_Open"
-        />
+            />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
     <!-- Center Content-->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:layout_weight="80"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-
-
         >
 
         <TextView
             android:id="@+id/course_full_description_id"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="90"
-            android:gravity="start"
+            android:layout_height="wrap_content"
             android:text="Course_Description"
-            android:textAlignment="viewStart" />
+             />
 
         <TextView
             android:id="@+id/prereqs_id"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="10"
-            android:gravity="start"
-            android:text="Prereqs_here"
-            android:textAlignment="viewStart" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Prereqs_here" />
 
     </LinearLayout>
 
 
 
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="20"
-        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         >
         <TextView
             android:id="@+id/days_offered_id"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="90dp"
-            android:layout_marginTop="10dp"
-            android:textAlignment="center"
+            android:layout_alignParentLeft="true"
             android:text="Days_Offered"
             />
 
@@ -102,10 +85,7 @@
             android:id="@+id/time_slot_id"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="40dp"
-            android:layout_marginTop="10dp"
-            android:textAlignment="center"
+            android:layout_centerInParent="true"
             android:text="Time_Slot"
             />
 
@@ -113,14 +93,12 @@
             android:id="@+id/professor_id"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="10dp"
-            android:textAlignment="center"
+            android:layout_alignParentRight="true"
             android:text="Professor"
             />
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 

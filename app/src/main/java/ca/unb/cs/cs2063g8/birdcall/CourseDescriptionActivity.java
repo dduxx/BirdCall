@@ -44,9 +44,9 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         professor = findViewById(R.id.professor_id);
 
         new DescriptionDownloader().execute(intent.getStringExtra(Course.DESCRIPTION));
-        courseID.setText(Course.COURSE_ID);
-        courseName.setText(Course.COURSE_NAME);
-        seatsOpen.setText(Course.SEATS_OPEN);
+        courseID.setText(intent.getStringExtra(Course.COURSE_ID));
+        courseName.setText(intent.getStringExtra(Course.COURSE_NAME));
+        seatsOpen.setText(intent.getStringExtra(Course.SEATS_OPEN));
         daysOffered.setText("NA");
         timeSlot.setText("NA");
         professor.setText("NA");
