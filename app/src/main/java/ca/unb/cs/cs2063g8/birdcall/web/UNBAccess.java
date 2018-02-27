@@ -63,7 +63,7 @@ public class UNBAccess {
             conn.setRequestProperty("Content-Length", String.valueOf(formBytes.length));
             conn.setDoOutput(true); //allows for sending of request body info. ie: form data
 
-            Log.i(TAG, "sending form request body");
+            Log.i(TAG, "sending request to: " + url.toString());
             conn.getOutputStream().write(formBytes);
 
             BufferedReader reader = new BufferedReader(
@@ -87,6 +87,7 @@ public class UNBAccess {
      */
     public static String getResponse(URL url, Expected returnType) {
         try{
+            Log.i(TAG, "sending request to: " + url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(conn.getInputStream(), DEFAULT_ENCODING));

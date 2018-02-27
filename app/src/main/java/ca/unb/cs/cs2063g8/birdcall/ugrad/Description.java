@@ -1,5 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
+import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,6 +19,7 @@ import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
  */
 
 public class Description {
+    private static final String TAG = "Description";
     private URL descriptionUrl;
     private String description;
     private String prereqs;
@@ -37,6 +40,7 @@ public class Description {
 
         Document doc = Jsoup.parse(response);
         Element description = doc.getElementsByTag("course_description").first();
+        Log.i(TAG, "desc: " + description.text());
         this.description = description.text();
     }
 
@@ -52,6 +56,7 @@ public class Description {
         else{
             this.prereqs = prereqTag.first().text();
         }
+        Log.i(TAG, "prereqs: " + prereqTag.text());
     }
 
     public String getDescription(){
@@ -83,6 +88,7 @@ public class Description {
     public void setResponse(){
         Map<String, String> params = new HashMap<>();
         String response = UNBAccess.getResponse(descriptionUrl, UNBAccess.Expected.HTML);
+        Log.i(TAG, "message: " + response);
         this.response = response;
     }
 

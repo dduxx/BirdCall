@@ -10,6 +10,8 @@ import java.net.MalformedURLException;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Description;
 
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.widget.Toast;
 import android.widget.TextView;
 
@@ -19,6 +21,7 @@ import android.widget.TextView;
  */
 
 public class CourseDescriptionActivity extends AppCompatActivity {
+    private static final String TAG = "CourseDescActivity";
     private TextView courseID;
     private TextView courseName;
     private TextView seatsOpen;
@@ -67,7 +70,10 @@ public class CourseDescriptionActivity extends AppCompatActivity {
 
        }
         protected void onPostExecute(String result) {
+            Log.i(TAG, result);
+            Log.i(TAG, "setting desc: " + description.getDescription());
             courseDescription.setText(description.getDescription());
+            Log.i(TAG, "setting prereq: " + description.getPrereqs());
             prereqs.setText(description.getPrereqs());
         }
     }
