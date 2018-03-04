@@ -80,18 +80,18 @@ public class SuggestionListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result){
             List<Course> suggestionList = Course.randomizer(courseList);
-            CustomListAdapter customListAdapter = new CustomListAdapter(getApplicationContext(), R.id.course_list,suggestionList);
-            mListView.setAdapter(customListAdapter);
+            CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list,suggestionList);
+            mListView.setAdapter(courseListAdapter);
 
 
         }
 
     }
 
-    private class CustomListAdapter extends ArrayAdapter<Course> {
+    private class CourseListAdapter extends ArrayAdapter<Course> {
         private List<Course> courses;
 
-        public CustomListAdapter(Context context, int textViewResourceId, List<Course> courses) {
+        public CourseListAdapter(Context context, int textViewResourceId, List<Course> courses) {
             super(context, textViewResourceId, courses);
             this.courses = courses;
         }
