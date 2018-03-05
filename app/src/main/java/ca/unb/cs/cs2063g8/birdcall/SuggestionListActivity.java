@@ -15,6 +15,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
+import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 /**
  * @author jason
@@ -46,13 +47,14 @@ public class SuggestionListActivity extends AppCompatActivity {
     }
 
     private void populate(){
-        new CourseDownloader().execute("action=index",
-                "noncredit=0",
-                "term=2018/WI",
-                "level=UG",
-                "subject=ANTH",
-                "location=FR",
-                "format=CLASS");
+        new CourseDownloader().execute(
+                getIntent().getStringExtra(UNBAccess.ACTION),
+                getIntent().getStringExtra(UNBAccess.NON_CREDIT),
+                getIntent().getStringExtra(UNBAccess.TERM),
+                getIntent().getStringExtra(UNBAccess.LEVEL),
+                getIntent().getStringExtra(UNBAccess.SUBJECT),
+                getIntent().getStringExtra(UNBAccess.LOCATION),
+                getIntent().getStringExtra(UNBAccess.FORMAT));
     }
 
 
@@ -67,7 +69,7 @@ public class SuggestionListActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... requestParams) {
             courseList = Course.getCourseList(
-                    requestParams);//this is hardcoded for now. should be passed via the intent later
+                    requestParams);
 
             return "Download Complete";
         }

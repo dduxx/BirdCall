@@ -31,6 +31,14 @@ public class UNBAccess {
     private final static String TAG = "UNBAccess";
     private final static String DEFAULT_ENCODING = "UTF-8";
 
+    public static final String ACTION = "ACTION";
+    public static final String NON_CREDIT = "NON_CREDIT";
+    public static final String LEVEL = "LEVEL";
+    public static final String FORMAT = "FORMAT";
+    public static final String LOCATION = "LOCATION";
+    public static final String TERM = "TERM";
+    public static final String SUBJECT = "SUBJECT";
+
     private UNBAccess(){
         //make it so you cannot instantiate this class
     }

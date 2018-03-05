@@ -21,7 +21,7 @@ public class Semester {
 
     public Semester(String name){
         this.name = name;
-        this.tag = name.substring(0, 2).toUpperCase() + "/" + name.split("\\s")[1];
+        this.tag = name.split("\\s")[1] + "/" + name.substring(0, 2).toUpperCase();
     }
 
     public String getName() {

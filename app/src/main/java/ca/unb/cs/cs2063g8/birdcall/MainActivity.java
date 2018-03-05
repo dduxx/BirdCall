@@ -16,6 +16,7 @@ import java.util.List;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Location;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Semester;
+import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,11 @@ import android.widget.Toast;
  */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+
+    private final String ACTION = "action=index";
+    private final String NON_CREDIT = "noncredit=0";
+    private final String LEVEL= "level=UG";
+    private final String FORMAT = "format=class";
 
     private List<Faculty> facultyList;
     private Boolean monday = false;
@@ -53,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Drawable defaultDOWButton;
     private Drawable selectedDOWButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +85,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), SuggestionListActivity.class);
+                intent.putExtra(UNBAccess.ACTION, ACTION);
+                intent.putExtra(UNBAccess.NON_CREDIT, NON_CREDIT);
+                intent.putExtra(UNBAccess.LEVEL, LEVEL);
+                intent.putExtra(UNBAccess.FORMAT, FORMAT);
+
+                String location = "location=" + Location.getLocationByName(
+                        locationSpinner.getSelectedItem().toString()).getId();
+                intent.putExtra(UNBAccess.LOCATION, location);
+
+                String term = "term=" + new Semester(
+                        semesterSpinner.getSelectedItem().toString()).getTag();
+                intent.putExtra(UNBAccess.TERM, term);
+
+                String subject = "subject=" + facultyList.get(
+                        facultySpinner.getSelectedItemPosition()).getPrefix();
+                intent.putExtra(UNBAccess.SUBJECT, subject);
                 startActivity(intent);
             }
         });
@@ -198,20 +219,7 @@ public class MainActivity extends AppCompatActivity {
      *     a toast notifying the user that they have no network is displayed
      */
     private void populateFacultySpinner(){
-        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-
-        if(isConnected){
-            new FacultyDownloader().execute();
-        }
-        else{
-            Toast.makeText(getApplicationContext(),
-                    "No Network Detected", Toast.LENGTH_LONG).show();
-        }
+        new FacultyDownloader().execute();
     }
 
     /**
@@ -233,7 +241,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... requestParams) {
-            facultyList = Faculty.getFaculties("level=UG");
+            List<Faculty> list = new ArrayList<>();
+            list.add(new Faculty("Any Subject", "ALLSUBJECTS"));
+            list.addAll(Faculty.getFaculties("level=UG"));
+            facultyList = list;
             return "Faculty download complete";
         }
 

@@ -38,7 +38,6 @@ public class Course {
 
     private String id;
     private String name;
-    private Faculty faculty;
     private Integer openSeats;
     private Description description;
 
@@ -49,12 +48,10 @@ public class Course {
     public Course(
             String id,
             String name,
-            Faculty faculty,
             Integer openSeats,
             Description description){
         this.id = id;
         this.name = name;
-        this.faculty = faculty;
         this.openSeats = openSeats;
         this.description = description;
     }
@@ -73,14 +70,6 @@ public class Course {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Faculty getFaculty() {
-        return faculty;
-    }
-
-    public void setFaculty(Faculty faculty) {
-        this.faculty = faculty;
     }
 
     public Integer getOpenSeats() {
@@ -104,7 +93,6 @@ public class Course {
         return "Course{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", faculty=" + faculty +
                 ", openSeats=" + openSeats +
                 ", description=" + description.getDescriptionUrl().toString() +
                 '}';
@@ -141,20 +129,32 @@ public class Course {
                 else{
                     String id = cells.get(1).text().replace("*", "");
                     String name = cells.get(3).text();
-                    Faculty faculty = new Faculty("Anthropology","ANTH");
                     Integer total = Integer.parseInt(cells.get(8).text().replaceAll("\\s", "").split("/")[0]);
-                    Integer enrollment = Integer.parseInt(cells.get(8).text().replaceAll("\\s", "").split("/")[1]);
+                    Integer enrollment;
+                    if(cells.get(8).text().contains("(W)")){
+                        enrollment = total;
+                    }
+                    else{
+                        enrollment = Integer.parseInt(cells.get(8).text().replaceAll("\\s", "").split("/")[1]);
+                    }
                     Integer openSeats = total - enrollment;
+
+                    if(openSeats < 0){
+                        openSeats = 0;
+                    }
                     String url = cells.get(1).getElementsByAttribute("href").first().attr("href");
                     Description description = new Description(new URL(url));
 
-                    courses.add(new Course(id, name, faculty, openSeats, description));
+                    courses.add(new Course(id, name, openSeats, description));
 
                 }
             }
 
         } catch(MalformedURLException e) {
             Log.e(TAG, e.getMessage(), e);
+            return courses;
+        } catch(Exception e){
+            Log.e(TAG, "unable to get courses", e);
             return courses;
         }
 
