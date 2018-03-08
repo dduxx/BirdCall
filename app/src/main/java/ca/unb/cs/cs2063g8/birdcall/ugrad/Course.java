@@ -221,7 +221,7 @@ public class Course {
                         courses.add(new Course(id, name, openSeats, description, days, time, professor));
                     } catch (NullPointerException e) {
                         Log.i(TAG, "no url for course: " + id);
-                        courses.add(new Course(id, name, openSeats, null, days, time,professor));
+                        courses.add(new Course(id, name, openSeats, new Description("[NO URL FOUND]"), days, time,professor));
                     }
                 }
             }

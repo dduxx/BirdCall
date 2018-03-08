@@ -26,19 +26,19 @@ public class Description {
     private String response;
 
     public Description(String url) throws MalformedURLException{
-        this(new URL(url));
-    }
-
-    public Description(URL url){
-        if(url == null){
+        if(url.equals("[NO URL FOUND]")){
             response = "No Information Available";
             description = "No Description Available";
             prereqs = "No Prerequisite Information Available";
-            descriptionUrl = url;
+            descriptionUrl = null;
         }
         else{
-            this.descriptionUrl = url;
+            this.descriptionUrl = new URL(url);
         }
+    }
+
+    public Description(URL url){
+        this.descriptionUrl = url;
     }
 
     public void setDescription(){
@@ -81,8 +81,13 @@ public class Description {
         return this.prereqs;
     }
 
-    public URL getDescriptionUrl(){
-        return this.descriptionUrl;
+    public String getDescriptionUrl(){
+        if(descriptionUrl == null){
+            return "[NO URL FOUND]";
+        }
+        else{
+            return this.descriptionUrl.toString();
+        }
     }
 
     public void setDescriptionUrl(URL url){
