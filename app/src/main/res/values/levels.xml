@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="level_array">
+        <item>Any Level</item>
         <item>1000</item>
         <item>2000</item>
         <item>3000</item>
         <item>4000</item>
-        <item>ANY</item>
     </string-array>
 </resources>

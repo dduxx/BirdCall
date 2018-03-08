@@ -50,9 +50,9 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         courseID.setText(intent.getStringExtra(Course.COURSE_ID));
         courseName.setText(intent.getStringExtra(Course.COURSE_NAME));
         seatsOpen.setText(intent.getStringExtra(Course.SEATS_OPEN));
-        daysOffered.setText("NA");
-        timeSlot.setText("NA");
-        professor.setText("NA");
+        daysOffered.setText(intent.getStringExtra(Course.DAYS_OFFERED));
+        timeSlot.setText(intent.getStringExtra(Course.TIME_SLOT));
+        professor.setText(intent.getStringExtra(Course.PROFESSOR));
     }
     public class DescriptionDownloader extends AsyncTask<String, Integer, String> {
        protected String doInBackground(String... params) {

@@ -32,6 +32,7 @@ public class Course {
     public static final String COURSE_NAME="COURSE_NAME";
     public static final String SEATS_OPEN="SEATS_OPEN";
     public static final String DESCRIPTION="DESCRIPTION";
+    public static final String COURSE_LEVEL = "COURSE_LEVEL";
     public static final String DAYS_OFFERED="DAYS_OFFERED";
     public static final String TIME_SLOT="TIME_SLOT";
     public static final String PROFESSOR="PROFESSOR";
@@ -40,6 +41,9 @@ public class Course {
     private String name;
     private Integer openSeats;
     private Description description;
+    private String daysOffered;
+    private String professor;
+    private String timeSlot;
 
     public Course(){
 
@@ -49,11 +53,17 @@ public class Course {
             String id,
             String name,
             Integer openSeats,
-            Description description){
+            Description description,
+            String daysOffered,
+            String timeSlot,
+            String professor){
         this.id = id;
         this.name = name;
         this.openSeats = openSeats;
         this.description = description;
+        this.daysOffered = daysOffered;
+        this.timeSlot = timeSlot;
+        this.professor = professor;
     }
 
     public String getId() {
@@ -88,6 +98,30 @@ public class Course {
         this.description = description;
     }
 
+    public void setProfessor(String professor){
+        this.professor = professor;
+    }
+
+    public String getDaysOffered(){
+        return this.daysOffered;
+    }
+
+    public void setDaysOffered(String daysOffered){
+        this.daysOffered = daysOffered;
+    }
+
+    public String getProfessor(){
+        return this.professor;
+    }
+
+    public String getTimeSlot(){
+        return this.timeSlot;
+    }
+
+    public void setTimeSlot(String timeSlot){
+        this.timeSlot = timeSlot;
+    }
+
     @Override
     public String toString() {
         return "Course{" +
@@ -111,8 +145,14 @@ public class Course {
      * @param formParams
      * @return the full list of courses
      */
-    public static List<Course> getCourseList(String... formParams){
+    public static List<Course> getCourseList(Map<String, String> filters, String... formParams){
         List<Course> courses = new ArrayList<>();
+        Log.i(TAG, "given filters:");
+
+        for(String s: filters.keySet()){
+            Log.i(TAG, "filter (" + s + ", " + filters.get(s) + ")");
+        }
+
         try{
             String response = UNBAccess.getResponse(
                     new URL(COURSE_SOURCE_URL), UNBAccess.Expected.HTML, formParams);
@@ -128,9 +168,33 @@ public class Course {
                 }
                 else{
                     String id = cells.get(1).text().replace("*", "");
+                    if(filters.containsKey(Course.COURSE_LEVEL)){
+                        if(!filters.get(Course.COURSE_LEVEL).equals("Any Level")
+                                && !filters.get(Course.COURSE_LEVEL).substring(0,1).equals(
+                                id.replaceAll("[a-zA-Z]", "").charAt(0)+"")){
+                            Log.i(TAG, "course id: " + id + " did not match filter level: "
+                                    + filters.get(Course.COURSE_LEVEL));
+                            continue;
+                        }
+                    }
                     String name = cells.get(3).text();
+
+                    String professor = cells.get(4).text();
+
+                    String days = cells.get(5).text();
+                    if(filters.containsKey(Course.DAYS_OFFERED)){
+                        if(!days.equals(filters.get(Course.DAYS_OFFERED))){
+                            Log.i(TAG, "Course " + id + " does not match days filter");
+                            continue;
+                        }
+                    }
+
                     Integer total = Integer.parseInt(cells.get(8).text().replaceAll("\\s", "").split("/")[0]);
+
+                    String time = cells.get(6).text().split("-")[0];
+
                     Integer enrollment;
+
                     if(cells.get(8).text().contains("(W)")){
                         enrollment = total;
                     }
@@ -139,14 +203,20 @@ public class Course {
                     }
                     Integer openSeats = total - enrollment;
 
-                    if(openSeats < 0){
-                        openSeats = 0;
+                    if(openSeats <= 0){
+                        Log.i(TAG, "Course: " + id + " is full");
+                        continue;
                     }
-                    String url = cells.get(1).getElementsByAttribute("href").first().attr("href");
-                    Description description = new Description(new URL(url));
 
-                    courses.add(new Course(id, name, openSeats, description));
-
+                    String url;
+                    try{
+                        url = cells.get(1).getElementsByAttribute("href").first().attr("href");
+                        Description description = new Description(new URL(url));
+                        courses.add(new Course(id, name, openSeats, description, days, time, professor));
+                    } catch (NullPointerException e) {
+                        Log.i(TAG, "no url for course: " + id);
+                        courses.add(new Course(id, name, openSeats, null, days, time,professor));
+                    }
                 }
             }
 

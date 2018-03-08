@@ -1,11 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +9,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Location;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Semester;
@@ -23,7 +20,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 /**
  * @author nmagee
@@ -39,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private final String FORMAT = "format=class";
 
     private List<Faculty> facultyList;
+
+    //used to identify if the day of the week has been selected
     private Boolean monday = false;
     private Boolean tuesday = false;
     private Boolean wednesday = false;
@@ -101,6 +99,12 @@ public class MainActivity extends AppCompatActivity {
                 String subject = "subject=" + facultyList.get(
                         facultySpinner.getSelectedItemPosition()).getPrefix();
                 intent.putExtra(UNBAccess.SUBJECT, subject);
+                intent.putExtra(Course.COURSE_LEVEL, levelSpinner.getSelectedItem().toString());
+                String days = setDays();
+                if(!days.equals("ALL")){
+                    intent.putExtra(Course.DAYS_OFFERED, days);
+                }
+
                 startActivity(intent);
             }
         });
@@ -150,6 +154,38 @@ public class MainActivity extends AppCompatActivity {
                         + " wed=" + wednesday + " thur=" + thursday + " fri=" + friday);
             }
         });
+    }
+
+    private String setDays(){
+        String days = "";
+        if(monday && tuesday && wednesday && thursday && friday){//all selected
+            days = "ALL";
+        }
+        else if((monday || tuesday || wednesday || thursday || friday) == false){//none selected
+            days = "ALL";
+        }
+        else{
+            if(monday){
+                days = days + "M";
+            }
+
+            if(tuesday){
+                days = days + "T";
+            }
+
+            if(wednesday){
+                days = days + "W";
+            }
+
+            if(thursday){
+                days = days + "Th";
+            }
+
+            if(friday){
+                days = days + "F";
+            }
+        }
+        return days;
     }
 
     private boolean dayOfWeekSelect(Button button, Boolean isSelected){

@@ -12,7 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
@@ -68,8 +71,13 @@ public class SuggestionListActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... requestParams) {
-            courseList = Course.getCourseList(
-                    requestParams);
+            Map<String, String> filters = new HashMap<>();
+            filters.put(Course.COURSE_LEVEL, getIntent().getStringExtra(Course.COURSE_LEVEL));
+
+            if(getIntent().getStringExtra(Course.DAYS_OFFERED) != null){
+                filters.put(Course.DAYS_OFFERED, getIntent().getStringExtra(Course.DAYS_OFFERED));
+            }
+            courseList = Course.getCourseList(filters, requestParams);
 
             return "Download Complete";
         }
@@ -82,10 +90,8 @@ public class SuggestionListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result){
             List<Course> suggestionList = Course.randomizer(courseList);
-            CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list,suggestionList);
+            CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, suggestionList);
             mListView.setAdapter(courseListAdapter);
-
-
         }
 
     }
@@ -123,12 +129,14 @@ public class SuggestionListActivity extends AppCompatActivity {
                         intent.putExtra(Course.COURSE_NAME,courses.get(position).getName());
                         intent.putExtra(Course.SEATS_OPEN, courses.get(position).getOpenSeats().toString());
                         intent.putExtra(Course.DESCRIPTION,courses.get(position).getDescription().getDescriptionUrl().toString());
+                        intent.putExtra(Course.PROFESSOR, courses.get(position).getProfessor());
+                        intent.putExtra(Course.DAYS_OFFERED, courses.get(position).getDaysOffered());
+                        intent.putExtra(Course.TIME_SLOT, courses.get(position).getTimeSlot());
                         startActivity(intent);
 
                     }
                 });
             }
-
             return v;
         }
 

@@ -30,7 +30,15 @@ public class Description {
     }
 
     public Description(URL url){
-        this.descriptionUrl = url;
+        if(url == null){
+            response = "No Information Available";
+            description = "No Description Available";
+            prereqs = "No Prerequisite Information Available";
+            descriptionUrl = url;
+        }
+        else{
+            this.descriptionUrl = url;
+        }
     }
 
     public void setDescription(){
