@@ -28,6 +28,8 @@ import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 public class SuggestionListActivity extends AppCompatActivity {
     private final String TAG = "SuggestionListActivity";
+    private final String ALL_SUBJECTS = "subject=ALLSUBJECTS";
+    private boolean allowWeight;
     private List<Course> courseList;
     private Button rerollButton;
     private ListView mListView;
@@ -36,7 +38,8 @@ public class SuggestionListActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_course_suggestion);
-
+        allowWeight = !getIntent().getStringExtra(UNBAccess.SUBJECT).equals(ALL_SUBJECTS);
+        Log.i(TAG, "weighted selection is: " + allowWeight);
         mListView = findViewById(R.id.course_list);
         rerollButton = findViewById(R.id.reroll_button);
 
@@ -50,14 +53,22 @@ public class SuggestionListActivity extends AppCompatActivity {
     }
 
     private void populate(){
-        new CourseDownloader().execute(
-                getIntent().getStringExtra(UNBAccess.ACTION),
-                getIntent().getStringExtra(UNBAccess.NON_CREDIT),
-                getIntent().getStringExtra(UNBAccess.TERM),
-                getIntent().getStringExtra(UNBAccess.LEVEL),
-                getIntent().getStringExtra(UNBAccess.SUBJECT),
-                getIntent().getStringExtra(UNBAccess.LOCATION),
-                getIntent().getStringExtra(UNBAccess.FORMAT));
+        if(courseList == null){
+            new CourseDownloader().execute(
+                    getIntent().getStringExtra(UNBAccess.ACTION),
+                    getIntent().getStringExtra(UNBAccess.NON_CREDIT),
+                    getIntent().getStringExtra(UNBAccess.TERM),
+                    getIntent().getStringExtra(UNBAccess.LEVEL),
+                    getIntent().getStringExtra(UNBAccess.SUBJECT),
+                    getIntent().getStringExtra(UNBAccess.LOCATION),
+                    getIntent().getStringExtra(UNBAccess.FORMAT));
+        }
+        else{
+            CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(),
+                    R.id.course_list, Course.randomizer(courseList,
+                    allowWeight));
+            mListView.setAdapter(courseListAdapter);
+        }
     }
 
 
@@ -92,7 +103,8 @@ public class SuggestionListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result){
-            List<Course> suggestionList = Course.randomizer(courseList);
+            List<Course> suggestionList = Course.randomizer(courseList,
+                    allowWeight);
             CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, suggestionList);
             mListView.setAdapter(courseListAdapter);
         }

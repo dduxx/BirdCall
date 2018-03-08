@@ -237,20 +237,56 @@ public class Course {
         return courses;
     }
 
-    public static List<Course> randomizer(List<Course> fullList){
+    public static List<Course> randomizer(List<Course> fullList, boolean allowWeight){
         final int MAX_LIST_SIZE = 5;
+        final int WEIGHT = 3;
+        final int DEFAULT_WEIGHT = 1;
+
         List<Course> suggestions = new ArrayList<>();
         //Remember to go back for other faculties
         if(fullList.size() <= 5){
             return fullList;
         }
         else{
+            List<Integer> weightedIndex = new ArrayList<>();
             for(int i = 0; i < MAX_LIST_SIZE; i++){
-                suggestions.add(fullList.get(new Random().nextInt(fullList.size())));
+                if(i<WEIGHT){
+                    Integer num;
+                    do{
+                        num = randomGenerator(WEIGHT, fullList.size(), allowWeight);
+                        if(!weightedIndex.contains(num)){
+                            weightedIndex.add(num);
+                            break;
+                        }
+                    }while(true);
+                }
+                else{
+                    Integer num;
+                    do{
+                        num = randomGenerator(DEFAULT_WEIGHT, fullList.size(), allowWeight);
+                        if(!weightedIndex.contains(num)){
+                            weightedIndex.add(num);
+                            break;
+                        }
+                    }while(true);
+                }
             }
+
+            for(Integer i : weightedIndex){
+                suggestions.add(fullList.get(i));
+            }
+
             return suggestions;
         }
 
     }
-    //TODO add a checking method that takes in the suggestion and compares against the old array
+
+    private static Integer randomGenerator(int weight, int limit, boolean allowWeight){
+        if(allowWeight){
+            return new Random().nextInt(limit/weight);
+        }
+        else{
+            return new Random().nextInt(limit);
+        }
+    }
 }
