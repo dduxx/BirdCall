@@ -31,4 +31,33 @@
         <item>09:30PM</item>
         <item>10:00PM</item>
     </string-array>
+    <string-array name="end_time_array">
+        <item>Any Time</item>
+        <item>09:20AM</item>
+        <item>09:50AM</item>
+        <item>10:200AM</item>
+        <item>10:50AM</item>
+        <item>11:20AM</item>
+        <item>11:50AM</item>
+        <item>12:20AM</item>
+        <item>12:50PM</item>
+        <item>01:20PM</item>
+        <item>01:50PM</item>
+        <item>02:20PM</item>
+        <item>02:50PM</item>
+        <item>03:20PM</item>
+        <item>03:50PM</item>
+        <item>04:20PM</item>
+        <item>04:50PM</item>
+        <item>05:20PM</item>
+        <item>05:50PM</item>
+        <item>06:20PM</item>
+        <item>06:50PM</item>
+        <item>07:20PM</item>
+        <item>07:50PM</item>
+        <item>08:20PM</item>
+        <item>08:50PM</item>
+        <item>09:20PM</item>
+        <item>09:50PM</item>
+    </string-array>
 </resources>

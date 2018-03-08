@@ -77,6 +77,9 @@ public class SuggestionListActivity extends AppCompatActivity {
             if(getIntent().getStringExtra(Course.DAYS_OFFERED) != null){
                 filters.put(Course.DAYS_OFFERED, getIntent().getStringExtra(Course.DAYS_OFFERED));
             }
+            if(getIntent().getStringExtra(Course.TIME_SLOT) != null){
+                filters.put(Course.TIME_SLOT, getIntent().getStringExtra(Course.TIME_SLOT));
+            }
             courseList = Course.getCourseList(filters, requestParams);
 
             return "Download Complete";

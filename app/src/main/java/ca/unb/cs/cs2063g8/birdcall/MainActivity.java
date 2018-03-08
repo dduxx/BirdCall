@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 /**
  * @author nmagee
@@ -46,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private Spinner levelSpinner;
     private Spinner locationSpinner;
     private Spinner facultySpinner;
-    private Spinner timeSpinner;
+    private Spinner startTimeSpinner;
+    private Spinner endTimeSpinner;
     private Button submitButton;
     private Button mondayButton;
     private Button tuesdayButton;
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         populateLocationSpinner();
         populateLevelSpinner();
         populateFacultySpinner();
-        populateTimeSpinner();
+        populateTimeSpinners();
         populateSemesterSpinner();
 
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +105,22 @@ public class MainActivity extends AppCompatActivity {
                 String days = setDays();
                 if(!days.equals("ALL")){
                     intent.putExtra(Course.DAYS_OFFERED, days);
+                }
+
+                String time = startTimeSpinner.getSelectedItem().toString() + "-" +
+                        endTimeSpinner.getSelectedItem().toString();
+                if(!time.contains("Any Time")){
+                    intent.putExtra(Course.TIME_SLOT, time);
+                }
+
+                if((time.split("-")[0].equals("Any Time")
+                        && !time.split("-")[1].equals("Any Time"))
+                        || (!time.split("-")[0].equals("Any Time")
+                        && time.split("-")[1].equals("Any Time"))){
+                    Toast.makeText(getApplicationContext(),
+                            "If specifying a time you must use both a start and end.",
+                            Toast.LENGTH_LONG).show();
+                    return;
                 }
 
                 startActivity(intent);
@@ -261,15 +279,24 @@ public class MainActivity extends AppCompatActivity {
     /**
      * populate the time drop down menu from values stored in xml
      */
-    private void populateTimeSpinner(){
-        timeSpinner = findViewById(R.id.time_spinner);
+    private void populateTimeSpinners(){
+        startTimeSpinner = findViewById(R.id.start_time_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.time_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        timeSpinner.setAdapter(adapter);
+        startTimeSpinner.setAdapter(adapter);
+
+        endTimeSpinner = findViewById(R.id.end_time_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> endAdapter = ArrayAdapter.createFromResource(this,
+                R.array.end_time_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        endAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        endTimeSpinner.setAdapter(endAdapter);
     }
 
     public class FacultyDownloader extends AsyncTask<String, Integer, String> {

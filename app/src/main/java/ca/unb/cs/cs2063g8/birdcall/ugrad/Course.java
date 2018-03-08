@@ -191,7 +191,13 @@ public class Course {
 
                     Integer total = Integer.parseInt(cells.get(8).text().replaceAll("\\s", "").split("/")[0]);
 
-                    String time = cells.get(6).text().split("-")[0];
+                    String time = cells.get(6).text().replaceAll("\\s", "");
+                    if(filters.containsKey(Course.TIME_SLOT)){
+                        if(!time.equals(filters.get(Course.TIME_SLOT))){
+                            Log.i(TAG, "Course " + id + " does not match time filter");
+                            continue;
+                        }
+                    }
 
                     Integer enrollment;
 
