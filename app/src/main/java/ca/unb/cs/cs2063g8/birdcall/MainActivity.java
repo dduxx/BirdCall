@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private Spinner startTimeSpinner;
     private Spinner endTimeSpinner;
     private Button submitButton;
+    private Button blacklistButton;
     private Button mondayButton;
     private Button tuesdayButton;
     private Button wednesdayButton;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         defaultDOWButton = getResources().getDrawable(R.drawable.day_of_week_button);
         selectedDOWButton = getResources().getDrawable(R.drawable.day_of_week_selected_button);
         submitButton = findViewById(R.id.submit_button);
+        blacklistButton = findViewById(R.id.blacklist_button);
 
         mondayButton = findViewById(R.id.day_of_week_mon);
         tuesdayButton = findViewById(R.id.day_of_week_tue);
@@ -124,6 +126,13 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 startActivity(intent);
+            }
+        });
+
+        blacklistButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                //TODO: jason needs to add blacklist function here.
             }
         });
 
