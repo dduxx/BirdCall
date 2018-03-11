@@ -28,7 +28,7 @@ import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 public class SuggestionListActivity extends AppCompatActivity {
     private final String TAG = "SuggestionListActivity";
-    private final String ALL_SUBJECTS = "subject=ALLSUBJECTS";
+    private final String ANY_LEVEL = "Any Level";
     private boolean allowWeight;
     private List<Course> courseList;
     private Button rerollButton;
@@ -38,7 +38,7 @@ public class SuggestionListActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_course_suggestion);
-        allowWeight = !getIntent().getStringExtra(UNBAccess.SUBJECT).equals(ALL_SUBJECTS);
+        allowWeight = getIntent().getStringExtra(Course.COURSE_LEVEL).equals(ANY_LEVEL);
         Log.i(TAG, "weighted selection is: " + allowWeight);
         mListView = findViewById(R.id.course_list);
         rerollButton = findViewById(R.id.reroll_button);
@@ -65,8 +65,8 @@ public class SuggestionListActivity extends AppCompatActivity {
         }
         else{
             CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(),
-                    R.id.course_list, Course.randomizer(courseList,
-                    allowWeight));
+                    R.id.course_list, Course.randomizer(courseList
+                            .toArray(new Course[courseList.size()]), allowWeight));
             mListView.setAdapter(courseListAdapter);
         }
     }
@@ -103,8 +103,8 @@ public class SuggestionListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result){
-            List<Course> suggestionList = Course.randomizer(courseList,
-                    allowWeight);
+            List<Course> suggestionList = Course.randomizer(courseList
+                    .toArray(new Course[courseList.size()]), allowWeight);
             CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, suggestionList);
             mListView.setAdapter(courseListAdapter);
         }

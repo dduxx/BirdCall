@@ -1,5 +1,6 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
@@ -10,6 +11,8 @@ import org.jsoup.select.Elements;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +27,7 @@ import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
  * unb course object
  */
 
-public class Course {
+public class Course implements Comparable<Course>{
     private static final String TAG = "Course";
     private static final String COURSE_SOURCE_URL =
             "http://es.unb.ca/apps/timetable/index.cgi";
@@ -123,14 +126,33 @@ public class Course {
     }
 
     @Override
+    public int compareTo(@NonNull Course compareCourse) {
+        int compareId = Integer.parseInt(compareCourse.getId()
+                .replaceAll("[A-Za-z]", ""));
+
+        //ascending order
+        return Integer.parseInt(this.getId().replaceAll("[A-Za-z]", ""))
+                - compareId;
+    }
+
+    @Override
     public String toString() {
         return "Course{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", openSeats=" + openSeats +
-                ", description=" + description.getDescriptionUrl().toString() +
+                ", description=" + description +
+                ", daysOffered='" + daysOffered + '\'' +
+                ", professor='" + professor + '\'' +
+                ", timeSlot='" + timeSlot + '\'' +
                 '}';
     }
+
+    public static Comparator<Course> CourseComparitor = new Comparator<Course>(){
+        public int compare(Course course1, Course course2){
+            return course1.compareTo(course2);
+        }
+    };
 
     /**
      * gets a course list based on certain form parameters
@@ -237,15 +259,23 @@ public class Course {
         return courses;
     }
 
-    public static List<Course> randomizer(List<Course> fullList, boolean allowWeight){
+    /**
+     * returns a list of 5 random courses. if weighted selection is on then the first 3 items in the
+     *     returned list will be from the first 1/3 of the ordered full course list and the last 2
+     *     will be randomly selected from the full list.
+     * @param fullList full list of courses that matched criteria
+     * @param allowWeight whether or not weighted results are used
+     * @return list of randomly selected courses
+     */
+    public static List<Course> randomizer(Course[] fullList, boolean allowWeight){
         final int MAX_LIST_SIZE = 5;
         final int WEIGHT = 3;
         final int DEFAULT_WEIGHT = 1;
 
+        Arrays.sort(fullList);
         List<Course> suggestions = new ArrayList<>();
-        //Remember to go back for other faculties
-        if(fullList.size() <= 5){
-            return fullList;
+        if(fullList.length <= 5){
+            return Arrays.asList(fullList);
         }
         else{
             List<Integer> weightedIndex = new ArrayList<>();
@@ -253,7 +283,7 @@ public class Course {
                 if(i<WEIGHT){
                     Integer num;
                     do{
-                        num = randomGenerator(WEIGHT, fullList.size(), allowWeight);
+                        num = randomGenerator(WEIGHT, fullList.length, allowWeight);
                         if(!weightedIndex.contains(num)){
                             weightedIndex.add(num);
                             break;
@@ -263,7 +293,7 @@ public class Course {
                 else{
                     Integer num;
                     do{
-                        num = randomGenerator(DEFAULT_WEIGHT, fullList.size(), allowWeight);
+                        num = randomGenerator(DEFAULT_WEIGHT, fullList.length, allowWeight);
                         if(!weightedIndex.contains(num)){
                             weightedIndex.add(num);
                             break;
@@ -273,7 +303,7 @@ public class Course {
             }
 
             for(Integer i : weightedIndex){
-                suggestions.add(fullList.get(i));
+                suggestions.add(fullList[i]);
             }
 
             return suggestions;
@@ -289,4 +319,5 @@ public class Course {
             return new Random().nextInt(limit);
         }
     }
+
 }
