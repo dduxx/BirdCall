@@ -12,6 +12,8 @@ import ca.unb.cs.cs2063g8.birdcall.ugrad.Description;
 
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import android.widget.TextView;
 
@@ -31,6 +33,7 @@ public class CourseDescriptionActivity extends AppCompatActivity {
     private TextView timeSlot;
     private TextView professor;
     private Description description;
+    private Button favourite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         daysOffered = findViewById(R.id.days_offered_id);
         timeSlot = findViewById(R.id.time_slot_id);
         professor = findViewById(R.id.professor_id);
+        favourite = findViewById(R.id.set_fav);
 
         new DescriptionDownloader().execute(intent.getStringExtra(Course.DESCRIPTION));
         courseID.setText(intent.getStringExtra(Course.COURSE_ID));
@@ -53,6 +57,13 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         daysOffered.setText(intent.getStringExtra(Course.DAYS_OFFERED));
         timeSlot.setText(intent.getStringExtra(Course.TIME_SLOT));
         professor.setText(intent.getStringExtra(Course.PROFESSOR));
+
+        favourite.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Toast.makeText(getApplicationContext(), "Favourites not yet complete", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     public class DescriptionDownloader extends AsyncTask<String, Integer, String> {
        protected String doInBackground(String... params) {

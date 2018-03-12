@@ -148,6 +148,15 @@
         android:layout_margin="25dp"/>
 
     <Button
+        android:id="@+id/fav_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/fav_button"
+        android:layout_below="@id/day_of_week_wed"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="25dp"/>
+
+    <Button
         android:id="@+id/blacklist_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
