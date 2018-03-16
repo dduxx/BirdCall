@@ -293,7 +293,7 @@ public class Course implements Comparable<Course>{
                 else{
                     Integer num;
                     do{
-                        num = randomGenerator(DEFAULT_WEIGHT, fullList.length, allowWeight);
+                        num = randomGenerator(DEFAULT_WEIGHT, fullList.length, false);
                         if(!weightedIndex.contains(num)){
                             weightedIndex.add(num);
                             break;
