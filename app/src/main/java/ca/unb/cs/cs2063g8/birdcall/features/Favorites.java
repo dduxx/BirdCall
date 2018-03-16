@@ -1,4 +1,4 @@
-package ca.unb.cs.cs2063g8.birdcall.functions;
+package ca.unb.cs.cs2063g8.birdcall.features;
 
 /**
  * @author nmagee
