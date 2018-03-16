@@ -2,6 +2,7 @@ package ca.unb.cs.cs2063g8.birdcall;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -17,12 +18,22 @@ import ca.unb.cs.cs2063g8.birdcall.database.BlackListDBHelper;
 public class BlackListActivity extends AppCompatActivity {
 
     private BlackListDBHelper blackListDBHelper;
-    private Button addButton;
+    private Button addRemoveButton;
     private Spinner type;
     private EditText name;
-    private ListView Listview;
-    private static final String TAG = "BlackListActivity";\
+    private RecyclerView recyclerView;
+    private static final String TAG = "BlackListActivity";
 
-    protected void onCreate(Bundle savedInstance )
+    protected void onCreate(Bundle savedInstanceState ){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.blacklist_activity);
+
+        addRemoveButton = findViewById(R.id.add_remove);
+        type = findViewById(R.id.type);
+        name = findViewById(R.id.name);
+
+
+    }
+
 
 }
