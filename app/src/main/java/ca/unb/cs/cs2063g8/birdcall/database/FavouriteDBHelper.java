@@ -50,7 +50,7 @@ public class FavouriteDBHelper extends DBHelper{
                     TIME_SLOT + " TEXT, " +
                     URL + " TEXT);";
 
-    private static final String[] columns =
+    public static final String[] COLUMNS =
             {ID, COURSE_ID, NAME, OPEN_SEATS, DAYS_OFFERED, PROFESSOR, TIME_SLOT, URL};
 
     private static final String TAG = "FavouriteDBHelper";

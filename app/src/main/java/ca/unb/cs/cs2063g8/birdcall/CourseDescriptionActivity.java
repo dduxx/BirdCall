@@ -1,12 +1,15 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import java.net.MalformedURLException;
 
+import ca.unb.cs.cs2063g8.birdcall.database.FavouriteDBHelper;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Description;
 
@@ -34,6 +37,8 @@ public class CourseDescriptionActivity extends AppCompatActivity {
     private TextView professor;
     private Description description;
     private Button favourite;
+
+    private FavouriteDBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,11 +94,38 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         }
     }
 
-    private class FavouritesAsyncTask extends AsyncTask<String, Integer, String>{
+    public class CheckFavTask extends AsyncTask<String, Void, Cursor>{
+        @Override
+        protected  void onPreExecute(){
+            //disable the favorites button
+        }
 
         @Override
-        protected String doInBackground(String... strings) {
+        protected Cursor doInBackground(String... strings) {
             return null;
         }
+
+        @Override
+        protected  void onPostExecute(Cursor result){
+            //re enable the favorites button
+        }
     }
+
+    public class AddFavTask extends AsyncTask<String, Void, Void>{
+        @Override
+        protected  void onPreExecute(){
+
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            return null;
+        }
+
+        @Override
+        protected  void onPostExecute(Void result){
+            
+        }
+    }
+
 }
