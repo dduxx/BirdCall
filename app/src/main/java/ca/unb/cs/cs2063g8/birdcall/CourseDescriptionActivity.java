@@ -88,4 +88,12 @@ public class CourseDescriptionActivity extends AppCompatActivity {
             prereqs.setText(description.getPrereqs());
         }
     }
+
+    private class FavouritesAsyncTask extends AsyncTask<String, Integer, String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+    }
 }

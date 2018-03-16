@@ -24,12 +24,18 @@
         android:id="@+id/course_name_id"
         android:layout_height="50dp"
         android:layout_width="wrap_content"
-        android:textAlignment="center"
-        android:layout_centerHorizontal="true"
+        android:gravity="left"
+        android:layout_toRightOf="@id/course_id"
         android:layout_alignParentTop="true"
         android:text="Course_Name"
         android:textColor="@android:color/black"
         />
+        <Button
+            android:id="@+id/set_fav"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_toLeftOf="@id/seats_open_id"
+            android:background="@drawable/not_fav_icon"/>
     <TextView
         android:id="@+id/seats_open_id"
         android:layout_width="70dp"
@@ -73,7 +79,7 @@
         android:layout_width="70dp"
         android:layout_height="50dp"
         android:layout_alignParentLeft="true"
-        android:layout_above="@id/set_fav"
+        android:layout_alignParentBottom="true"
         android:text="Days_Offered"
         android:textColor="@android:color/black"
         android:background="@android:color/darker_gray"
@@ -83,7 +89,7 @@
         android:layout_height="50dp"
         android:layout_width="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_above="@id/set_fav"
+        android:layout_alignParentBottom="true"
         android:text="Time_Slot"
         android:textColor="@android:color/black"
         />
@@ -91,18 +97,11 @@
         android:id="@+id/time_slot_id"
         android:layout_width="70dp"
         android:layout_height="50dp"
-        android:layout_above="@id/set_fav"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:text="Professor"
         android:gravity="right"
         android:textColor="@android:color/black"
         android:background="@android:color/darker_gray"
         />
-    <Button
-        android:id="@+id/set_fav"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/not_fav_icon"/>
 </RelativeLayout>
