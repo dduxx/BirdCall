@@ -141,10 +141,10 @@ public class Course implements Comparable<Course>{
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", openSeats=" + openSeats +
-                ", description=" + description +
                 ", daysOffered='" + daysOffered + '\'' +
                 ", professor='" + professor + '\'' +
                 ", timeSlot='" + timeSlot + '\'' +
+                ", url='" + description.getDescriptionUrl() + '\'' +
                 '}';
     }
 

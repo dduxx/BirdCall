@@ -1,6 +1,8 @@
 package ca.unb.cs.cs2063g8.birdcall;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,11 +15,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ca.unb.cs.cs2063g8.birdcall.database.FavouriteDBHelper;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
+import ca.unb.cs.cs2063g8.birdcall.ugrad.Description;
 import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 /**
@@ -28,11 +34,20 @@ import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 public class SuggestionListActivity extends AppCompatActivity {
     private final String TAG = "SuggestionListActivity";
-    private final String ANY_LEVEL = "Any Level";
+    public static final String ANY_LEVEL = "Any Level";
+    public static final String SEARCH = "SEARCH";
     private boolean allowWeight;
     private List<Course> courseList;
     private Button rerollButton;
     private ListView mListView;
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(!getIntent().getBooleanExtra(SEARCH, false)){
+            new FavouritesTask().execute();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstance){
@@ -53,7 +68,8 @@ public class SuggestionListActivity extends AppCompatActivity {
     }
 
     private void populate(){
-        if(courseList == null){
+        Log.i(TAG, "search value is: " + getIntent().getBooleanExtra(SEARCH, false));
+        if(courseList == null && getIntent().getBooleanExtra(SEARCH, false) == true){
             new CourseDownloader().execute(
                     getIntent().getStringExtra(UNBAccess.ACTION),
                     getIntent().getStringExtra(UNBAccess.NON_CREDIT),
@@ -62,6 +78,11 @@ public class SuggestionListActivity extends AppCompatActivity {
                     getIntent().getStringExtra(UNBAccess.SUBJECT),
                     getIntent().getStringExtra(UNBAccess.LOCATION),
                     getIntent().getStringExtra(UNBAccess.FORMAT));
+        }
+        else if(courseList == null && getIntent().getBooleanExtra(this.SEARCH, false) == false){
+            rerollButton.setEnabled(false);
+            rerollButton.setVisibility(View.INVISIBLE);
+            new FavouritesTask().execute();
         }
         else{
             CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(),
@@ -111,6 +132,48 @@ public class SuggestionListActivity extends AppCompatActivity {
 
     }
 
+    private class FavouritesTask extends AsyncTask<String, Void, Cursor>{
+
+        @Override
+        protected  void onPreExecute(){
+            Log.i(TAG, "Loading favourites");
+        }
+
+        @Override
+        protected Cursor doInBackground(String... strings) {
+            SQLiteDatabase db = new FavouriteDBHelper(getApplicationContext()).getReadableDatabase();
+
+            return db.rawQuery("SELECT * FROM " + FavouriteDBHelper.TABLE_NAME, null);
+        }
+
+        @Override
+        protected  void onPostExecute(Cursor result){
+            List<Course> favourites = new ArrayList<>();
+
+            if (result.moveToFirst()) {
+                while (!result.isAfterLast()) {
+                    try{
+                        Course course = new Course(
+                                result.getString(result.getColumnIndex(FavouriteDBHelper.COURSE_ID)),
+                                result.getString(result.getColumnIndex(FavouriteDBHelper.NAME)),
+                                result.getInt(result.getColumnIndex(FavouriteDBHelper.OPEN_SEATS)),
+                                new Description(result.getString(result.getColumnIndex(FavouriteDBHelper.URL))),
+                                result.getString(result.getColumnIndex(FavouriteDBHelper.DAYS_OFFERED)),
+                                result.getString(result.getColumnIndex(FavouriteDBHelper.PROFESSOR)),
+                                result.getString(result.getColumnIndex(FavouriteDBHelper.TIME_SLOT)));
+                        favourites.add(course);
+                        result.moveToNext();
+                    } catch(MalformedURLException e){
+                        result.moveToNext();
+                    }
+
+                    CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, favourites);
+                    mListView.setAdapter(courseListAdapter);
+                }
+            }
+        }
+    }
+
     private class CourseListAdapter extends ArrayAdapter<Course> {
         private List<Course> courses;
 
@@ -148,7 +211,6 @@ public class SuggestionListActivity extends AppCompatActivity {
                         intent.putExtra(Course.DAYS_OFFERED, courses.get(position).getDaysOffered());
                         intent.putExtra(Course.TIME_SLOT, courses.get(position).getTimeSlot());
                         startActivity(intent);
-
                     }
                 });
             }

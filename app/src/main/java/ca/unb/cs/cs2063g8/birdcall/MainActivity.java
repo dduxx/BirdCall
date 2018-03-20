@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private Drawable defaultDOWButton;
     private Drawable selectedDOWButton;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-
+                intent.putExtra(SuggestionListActivity.SEARCH, true);
                 startActivity(intent);
             }
         });
@@ -141,7 +142,10 @@ public class MainActivity extends AppCompatActivity {
         favouriteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Toast.makeText(getApplicationContext(), "Favourites not yet complete", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), SuggestionListActivity.class);
+                intent.putExtra(SuggestionListActivity.SEARCH, false);
+                intent.putExtra(Course.COURSE_LEVEL, SuggestionListActivity.ANY_LEVEL);
+                startActivity(intent);
             }
         });
 
