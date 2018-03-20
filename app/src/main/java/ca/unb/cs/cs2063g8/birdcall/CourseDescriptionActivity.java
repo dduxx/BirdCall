@@ -1,8 +1,10 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,12 +39,16 @@ public class CourseDescriptionActivity extends AppCompatActivity {
     private TextView professor;
     private Description description;
     private Button favourite;
+    private Boolean isFavourite = false;
 
     private FavouriteDBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        favourite = findViewById(R.id.set_fav);
+        dbHelper = new FavouriteDBHelper(this);
+
         setContentView(R.layout.course_description_activity);
         courseDescription = findViewById(R.id.course_full_description_id);
         prereqs = findViewById(R.id.prereqs_id);
@@ -63,10 +69,37 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         timeSlot.setText(intent.getStringExtra(Course.TIME_SLOT));
         professor.setText(intent.getStringExtra(Course.PROFESSOR));
 
+        CheckFavTask check = new CheckFavTask();
+
+        check.execute(intent.getStringExtra(Course.COURSE_ID),
+                intent.getStringExtra(Course.COURSE_NAME),
+                intent.getStringExtra(Course.SEATS_OPEN),
+                intent.getStringExtra(Course.DAYS_OFFERED),
+                intent.getStringExtra(Course.PROFESSOR),
+                intent.getStringExtra(Course.TIME_SLOT),
+                intent.getStringExtra(Course.DESCRIPTION));
+
         favourite.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Toast.makeText(getApplicationContext(), "Favourites not yet complete", Toast.LENGTH_SHORT).show();
+                if(!isFavourite){
+                    new AddFavTask().execute(getIntent().getStringExtra(Course.COURSE_ID),
+                            getIntent().getStringExtra(Course.COURSE_NAME),
+                            getIntent().getStringExtra(Course.SEATS_OPEN),
+                            getIntent().getStringExtra(Course.DAYS_OFFERED),
+                            getIntent().getStringExtra(Course.PROFESSOR),
+                            getIntent().getStringExtra(Course.TIME_SLOT),
+                            getIntent().getStringExtra(Course.DESCRIPTION));
+                }
+                else{
+                    new DeleteTask().execute(getIntent().getStringExtra(Course.COURSE_ID),
+                            getIntent().getStringExtra(Course.COURSE_NAME),
+                            getIntent().getStringExtra(Course.SEATS_OPEN),
+                            getIntent().getStringExtra(Course.DAYS_OFFERED),
+                            getIntent().getStringExtra(Course.PROFESSOR),
+                            getIntent().getStringExtra(Course.TIME_SLOT),
+                            getIntent().getStringExtra(Course.DESCRIPTION));
+                }
             }
         });
     }
@@ -94,37 +127,136 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         }
     }
 
-    public class CheckFavTask extends AsyncTask<String, Void, Cursor>{
+    private class CheckFavTask extends AsyncTask<String, Void, Cursor>{
         @Override
         protected  void onPreExecute(){
-            //disable the favorites button
+            //disable the favorite button until we resolve if it is in the db.
+            favourite.setEnabled(false);
         }
 
         @Override
-        protected Cursor doInBackground(String... strings) {
-            return null;
+        protected Cursor doInBackground(String... params) {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+            String[] cols = FavouriteDBHelper.COLUMNS;
+            String[] args = {params[0],
+                    params[1],
+                    params[2],
+                    params[3],
+                    params[4],
+                    params[5],
+                    params[6]};
+
+            String selection = FavouriteDBHelper.COURSE_ID
+                    + " = ? AND " + FavouriteDBHelper.NAME
+                    + " = ? AND " + FavouriteDBHelper.OPEN_SEATS
+                    + " = ? AND " + FavouriteDBHelper.DAYS_OFFERED
+                    + " = ? AND " + FavouriteDBHelper.PROFESSOR
+                    + " = ? AND " + FavouriteDBHelper.TIME_SLOT
+                    + " = ? AND " + FavouriteDBHelper.URL + " = ?";
+
+            String order = FavouriteDBHelper.COURSE_ID;
+
+            return db.query(FavouriteDBHelper.TABLE_NAME, cols, selection, args, null, null, order);
+
         }
 
         @Override
         protected  void onPostExecute(Cursor result){
-            //re enable the favorites button
+            Drawable notFav = getResources().getDrawable(R.drawable.not_fav_icon);
+            Drawable isFav = getResources().getDrawable(R.drawable.is_fav_icon);
+            if(result.getCount() == 0){
+                Log.i(TAG, "Course not found in favorites");
+                favourite.setBackgroundDrawable(notFav);
+                isFavourite = false;
+            }
+            else{
+                Log.i(TAG, "Course is in the favourites");
+                favourite.setBackgroundDrawable(isFav);
+                isFavourite = true;
+            }
+            favourite.setEnabled(true);
         }
     }
 
-    public class AddFavTask extends AsyncTask<String, Void, Void>{
+    private class AddFavTask extends AsyncTask<String, Void, Void>{
         @Override
         protected  void onPreExecute(){
-
+            favourite.setEnabled(false);
         }
 
         @Override
-        protected Void doInBackground(String... strings) {
+        protected Void doInBackground(String... params) {
+            Log.i(TAG, "adding course to favourite");
+            String courseId = params[0];
+            String name = params[1];
+            String openSeats = params[2];
+            String daysOffered = params[3];
+            String professor = params[4];
+            String timeSlot = params[5];
+            String url = params[6];
+
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(FavouriteDBHelper.COURSE_ID, courseId);
+            values.put(FavouriteDBHelper.NAME, name);
+            values.put(FavouriteDBHelper.OPEN_SEATS, openSeats);
+            values.put(FavouriteDBHelper.DAYS_OFFERED, daysOffered);
+            values.put(FavouriteDBHelper.PROFESSOR, professor);
+            values.put(FavouriteDBHelper.TIME_SLOT, timeSlot);
+            values.put(FavouriteDBHelper.URL, url);
+            db.insert(FavouriteDBHelper.TABLE_NAME, null, values);
             return null;
         }
 
         @Override
         protected  void onPostExecute(Void result){
-            
+            Drawable isFav = getResources().getDrawable(R.drawable.is_fav_icon);
+            favourite.setBackgroundDrawable(isFav);
+            isFavourite = true;
+            favourite.setEnabled(true);
+            Toast.makeText(getApplicationContext(), "Added to favourites", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class DeleteTask extends AsyncTask<String, Void, Void>{
+        @Override
+        protected  void onPreExecute(){
+            favourite.setEnabled(false);
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+            String[] args = {params[0],
+                    params[1],
+                    params[2],
+                    params[3],
+                    params[4],
+                    params[5],
+                    params[6]};
+
+            String deletion = FavouriteDBHelper.COURSE_ID
+                    + " = ? AND " + FavouriteDBHelper.NAME
+                    + " = ? AND " + FavouriteDBHelper.OPEN_SEATS
+                    + " = ? AND " + FavouriteDBHelper.DAYS_OFFERED
+                    + " = ? AND " + FavouriteDBHelper.PROFESSOR
+                    + " = ? AND " + FavouriteDBHelper.TIME_SLOT
+                    + " = ? AND " + FavouriteDBHelper.URL + " = ?";
+
+            int deletedRows = db.delete(FavouriteDBHelper.TABLE_NAME, deletion, args);
+            Log.i(TAG, "removed: " + deletedRows + " from the database");
+            return null;
+        }
+
+        @Override
+        protected  void onPostExecute(Void result){
+            Drawable notFav = getResources().getDrawable(R.drawable.not_fav_icon);
+            favourite.setBackgroundDrawable(notFav);
+            isFavourite = false;
+            favourite.setEnabled(true);
+            Toast.makeText(getApplicationContext(), "Removed from favourites", Toast.LENGTH_SHORT).show();
         }
     }
 
