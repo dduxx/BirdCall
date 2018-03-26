@@ -159,8 +159,8 @@ public class SuggestionListActivity extends AppCompatActivity {
                                 result.getInt(result.getColumnIndex(FavouriteDBHelper.OPEN_SEATS)),
                                 new Description(result.getString(result.getColumnIndex(FavouriteDBHelper.URL))),
                                 result.getString(result.getColumnIndex(FavouriteDBHelper.DAYS_OFFERED)),
-                                result.getString(result.getColumnIndex(FavouriteDBHelper.PROFESSOR)),
-                                result.getString(result.getColumnIndex(FavouriteDBHelper.TIME_SLOT)));
+                                result.getString(result.getColumnIndex(FavouriteDBHelper.TIME_SLOT)),
+                                result.getString(result.getColumnIndex(FavouriteDBHelper.PROFESSOR)));
                         favourites.add(course);
                         result.moveToNext();
                     } catch(MalformedURLException e){
