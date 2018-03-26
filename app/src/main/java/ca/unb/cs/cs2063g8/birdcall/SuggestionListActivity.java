@@ -53,6 +53,7 @@ public class SuggestionListActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_course_suggestion);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         allowWeight = getIntent().getStringExtra(Course.COURSE_LEVEL).equals(ANY_LEVEL);
         Log.i(TAG, "weighted selection is: " + allowWeight);
         mListView = findViewById(R.id.course_list);
@@ -65,6 +66,12 @@ public class SuggestionListActivity extends AppCompatActivity {
             }
         });
         populate();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish();
+        return true;
     }
 
     private void populate(){

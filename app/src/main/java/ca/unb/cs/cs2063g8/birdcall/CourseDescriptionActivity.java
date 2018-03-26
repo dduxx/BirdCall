@@ -69,6 +69,8 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         timeSlot.setText(intent.getStringExtra(Course.TIME_SLOT));
         professor.setText(intent.getStringExtra(Course.PROFESSOR));
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         CheckFavTask check = new CheckFavTask();
 
         check.execute(intent.getStringExtra(Course.COURSE_ID),
@@ -103,6 +105,13 @@ public class CourseDescriptionActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish();
+        return true;
+    }
+
     public class DescriptionDownloader extends AsyncTask<String, Integer, String> {
        protected String doInBackground(String... params) {
             String url = params[0];
