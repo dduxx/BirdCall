@@ -1,9 +1,12 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,9 +21,11 @@ import ca.unb.cs.cs2063g8.birdcall.ugrad.Semester;
 import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -201,26 +206,37 @@ public class MainActivity extends AppCompatActivity {
     /**
      * checks for network connectivity. if non, notify the user and close the app.
      */
-    private void checkNetwork(){
+    private boolean checkNetwork(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getApplicationContext()
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
 
 
-        if(true){
-            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getApplicationContext());
-            alertBuilder.setTitle("Network Required");
-            alertBuilder.setMessage("This application requires a network connection. Please connect " +
-                    "to a network to search for courses. The application will now close.")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            MainActivity.this.finish();
-                        }
-                    });
-            AlertDialog dialog = alertBuilder.create();
-            dialog.show();
+        if(isConnected){
+            Log.i(TAG, "network connection found.");
+            return true;
         }
         else{
-
+            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+            alertDialog.setTitle("Connection Issue");
+            alertDialog.setMessage("This application requires the use of a network. Please ensure " +
+                    "that you are connected to a network.");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            alertDialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+            final Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            LinearLayout.LayoutParams buttonLL = (LinearLayout.LayoutParams) button.getLayoutParams();
+            buttonLL.gravity = Gravity.CENTER;
+            button.setLayoutParams(buttonLL);
+            return false;
         }
     }
 
@@ -323,7 +339,9 @@ public class MainActivity extends AppCompatActivity {
      *     a toast notifying the user that they have no network is displayed
      */
     private void populateFacultySpinner(){
-        new FacultyDownloader().execute();
+        if(checkNetwork()){
+            new FacultyDownloader().execute();
+        }
     }
 
     /**

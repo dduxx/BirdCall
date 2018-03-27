@@ -1,5 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -21,7 +23,17 @@ public class Semester {
 
     public Semester(String name){
         this.name = name;
-        this.tag = name.split("\\s")[1] + "/" + name.substring(0, 2).toUpperCase();
+        String tag = name.split("\\s")[1];
+        if(tag.contains("Summer")){
+            tag = tag + "/SM";
+        }
+        else if(tag.contains("Winter")){
+            tag = tag + "/WI";
+        }
+        else{
+            tag = tag + "/FA";
+        }
+        this.tag = tag;
     }
 
     public String getName() {
@@ -109,7 +121,9 @@ public class Semester {
      */
     public static List<Semester> getSemesters(){
         List<Semester> semesters = new ArrayList<>();
+        Log.i("SEM 1", getCurrentSemester().tag);
         semesters.add(getCurrentSemester());
+        Log.i("SEM 2", getNextSemester(getCurrentSemester()).tag);
         semesters.add(getNextSemester(getCurrentSemester()));
         return semesters;
     }

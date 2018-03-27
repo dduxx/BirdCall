@@ -175,6 +175,10 @@ public class Course implements Comparable<Course>{
             Log.i(TAG, "filter (" + s + ", " + filters.get(s) + ")");
         }
 
+        for(int i=0; i<formParams.length; i++){
+            Log.i(TAG, "form params: " + formParams[i]);
+        }
+
         try{
             String response = UNBAccess.getResponse(
                     new URL(COURSE_SOURCE_URL), UNBAccess.Expected.HTML, formParams);
