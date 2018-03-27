@@ -201,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
                         + " wed=" + wednesday + " thur=" + thursday + " fri=" + friday);
             }
         });
+
     }//end onCreate()
 
     /**
@@ -332,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
 
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         locationSpinner.setAdapter(adapter);
+        locationSpinner = Location.determineLocation(getApplicationContext(), locationSpinner);
     }
 
     /**
