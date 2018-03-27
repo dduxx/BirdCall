@@ -1,5 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -194,6 +196,32 @@ public class MainActivity extends AppCompatActivity {
                         + " wed=" + wednesday + " thur=" + thursday + " fri=" + friday);
             }
         });
+    }//end onCreate()
+
+    /**
+     * checks for network connectivity. if non, notify the user and close the app.
+     */
+    private void checkNetwork(){
+
+
+        if(true){
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getApplicationContext());
+            alertBuilder.setTitle("Network Required");
+            alertBuilder.setMessage("This application requires a network connection. Please connect " +
+                    "to a network to search for courses. The application will now close.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.this.finish();
+                        }
+                    });
+            AlertDialog dialog = alertBuilder.create();
+            dialog.show();
+        }
+        else{
+
+        }
     }
 
     private String setDays(){
