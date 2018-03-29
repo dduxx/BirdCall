@@ -3,6 +3,7 @@ package ca.unb.cs.cs2063g8.birdcall.ugrad;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -22,12 +23,13 @@ import ca.unb.cs.cs2063g8.birdcall.MainActivity;
  * date: 2018-01-20
  */
 
-public class Location {
+public class Location{
     private static final String TAG = "Location";
     private String name;
     private String id;
     private float lat;
     private float lon;
+    private float distance;
 
     public Location(String name, String id, float lat, float lon) {
         this.name = name;
@@ -68,6 +70,10 @@ public class Location {
         this.id = id;
     }
 
+    public float getDistance(){
+        return this.distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -90,6 +96,7 @@ public class Location {
         locations.add(new Location("Fredericton", "FR", 45.9612631F, -66.63934379999999F));
         locations.add(new Location("Saint John", "SJ", 45.2878008F, -66.0478147F));
         locations.add(new Location("Moncton" , "MO", 46.0845414F, -64.77711339999999F));
+
         return locations;
     }
 
@@ -124,15 +131,14 @@ public class Location {
     }
 
     /**
-     * finds the distance between the given campus location and the given user location
+     * finds the distance between the campus location and the current user location
      * @param context context for permissions
-     * @param campusLocation the campus to compare too
      * @return the distance as a float
      */
-    public static float findDistance(MainActivity context, Location campusLocation, MainActivity.Listener listener){
+    public void setDistance(MainActivity context, MainActivity.Listener listener){
         android.location.Location campus = new android.location.Location("");
-        campus.setLatitude(campusLocation.getLat());
-        campus.setLongitude(campusLocation.getLon());
+        campus.setLatitude(getLat());
+        campus.setLongitude(getLon());
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
@@ -142,12 +148,7 @@ public class Location {
             listener.setCampus(campus);
 
             locationClient.getLastLocation().addOnSuccessListener(context, listener);
-            return listener.getDistance();
+            this.distance = listener.getDistance();
         }
-        else {
-            Log.i(TAG, "could not get location");
-            return 0F;
-        }
-
     }
 }

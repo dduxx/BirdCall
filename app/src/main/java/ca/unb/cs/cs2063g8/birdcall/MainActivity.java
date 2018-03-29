@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -437,26 +438,22 @@ public class MainActivity extends AppCompatActivity {
             List<String> locationNames = new ArrayList<>();
 
             List<Location> locations = allLocations[0];
-            Location nearest = locations.get(0);
-            int index = 0;
             for(int i=0; i<locations.size(); i++){
-                //TODO: find out why the fuck this does not work
-                float nearestDistance = Location.findDistance(MainActivity.this, nearest, new Listener());
-                float candidateDistance = Location.findDistance(MainActivity.this, locations.get(i), new Listener());
+                locations.get(i).setDistance(MainActivity.this, new Listener());
+            }
 
-                if(nearestDistance > candidateDistance){
-                    Log.i(TAG, "Location <" + locations.get(i).getId() + "> is closer than <" + nearest.getId() + ">");
+            Location nearest = locations.get(0);
+            for(int i=0; i<locations.size(); i++){
+                if(nearest.getDistance() > locations.get(i).getDistance()){
                     nearest = locations.get(i);
-                    index = i;
                 }
             }
 
-
             locationNames.add(nearest.getName());
 
-            for(int i=0; i<locations.size(); i++){
-                if(i != index){
-                    locationNames.add(locations.get(i).getName());
+            for(Location l : locations){
+                if(!l.equals(nearest)){
+                    locationNames.add(l.getName());
                 }
             }
 
@@ -482,16 +479,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onSuccess(android.location.Location location) {
-            Listener.this.distance=location.distanceTo(campus);
-            Log.i(TAG, "calculated distance: " + Listener.this.distance);
+            this.distance=location.distanceTo(campus);
+            Log.i(TAG, "calculated distance: " + getDistance());
         }
 
         public float getDistance(){
-            return Listener.this.distance;
+            return this.distance;
         }
 
         public void setCampus(android.location.Location campus){
-            Listener.this.campus = campus;
+            this.campus = campus;
         }
     }
 }
