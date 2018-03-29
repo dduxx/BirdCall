@@ -1,18 +1,25 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
@@ -319,21 +326,8 @@ public class MainActivity extends AppCompatActivity {
      *     try to detect location
      */
     private void populateLocationSpinner(){
-        List<Location> locations = Location.getAllLocations();
-
-        ArrayList<String> locationNames = new ArrayList<>();
-
-        for(Location l : locations){
-            locationNames.add(l.getName());
-        }
-        locationSpinner = findViewById(R.id.location_spinner);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, locationNames);
-
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        locationSpinner.setAdapter(adapter);
-        locationSpinner = Location.determineLocation(getApplicationContext(), locationSpinner);
+        Log.i(TAG, "starting location task");
+        new LocationTask().execute(Location.getAllLocations());
     }
 
     /**
@@ -397,6 +391,47 @@ public class MainActivity extends AppCompatActivity {
 
             adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             facultySpinner.setAdapter(adapter);
+        }
+    }
+
+    public class LocationTask extends AsyncTask<List<Location>, Void, List<String>>{
+
+
+        @Override
+        protected List<String> doInBackground(List<Location>... allLocations) {
+            List<String> locationNames = new ArrayList<>();
+            List<Location> locations = allLocations[0];
+            Location nearest = locations.get(0);
+            for(int i=0; i<locations.size(); i++){
+                if(i>0){
+                    if(Location.findDistance(getApplicationContext(), nearest) >
+                            Location.findDistance(getApplicationContext(), locations.get(i))){
+                        nearest = locations.get(i);
+                    }
+                }
+            }
+
+            locationNames.add(nearest.getName());
+
+            for(int i=0; i<locations.size(); i++){
+                if(!nearest.equals(locations.get(i))){
+                    locationNames.add(locations.get(i).getName());
+                }
+            }
+
+            return locationNames;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result){
+            locationSpinner = findViewById(R.id.location_spinner);
+
+            ArrayAdapter<String> adapter =
+                    new ArrayAdapter<>(MainActivity.this,
+                            android.R.layout.simple_spinner_item, result);
+
+            adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+            locationSpinner.setAdapter(adapter);
         }
     }
 }
