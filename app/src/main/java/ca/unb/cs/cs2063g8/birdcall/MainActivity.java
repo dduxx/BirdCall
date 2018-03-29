@@ -36,6 +36,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+
 /**
  * @author nmagee
  * date: 2018-02-21
@@ -43,6 +45,7 @@ import android.widget.Toast;
  */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     private final String ACTION = "action=index";
     private final String NON_CREDIT = "noncredit=0";
@@ -282,10 +285,10 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean dayOfWeekSelect(Button button, Boolean isSelected){
         if(isSelected){
-            button.setBackgroundDrawable(defaultDOWButton);
+            button.setBackground(defaultDOWButton);
         }
         else{
-            button.setBackgroundDrawable(selectedDOWButton);
+            button.setBackground(selectedDOWButton);
         }
         return !isSelected;
     }
@@ -327,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void populateLocationSpinner(){
         Log.i(TAG, "starting location task");
-        new LocationTask().execute(Location.getAllLocations());
+        requestPermissions();
     }
 
     /**
@@ -361,6 +364,38 @@ public class MainActivity extends AppCompatActivity {
         endAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         endTimeSpinner.setAdapter(endAdapter);
+    }
+
+    public void requestPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "requestPermissions: No permissions");
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        } else {
+            Log.i(TAG, "requestPermissions: Have permissions");
+            new LocationTask().execute(Location.getAllLocations());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[],
+                                           int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "onRequestPermissionsResult: Granted");
+                    new LocationTask().execute(Location.getAllLocations());
+                } else {
+                    Log.i(TAG, "onRequestPermissionsResult: Denied");
+                    new LocationTask().execute(Location.getAllLocations());
+                }
+            }
+        }
     }
 
     public class FacultyDownloader extends AsyncTask<String, Integer, String> {
@@ -400,21 +435,27 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected List<String> doInBackground(List<Location>... allLocations) {
             List<String> locationNames = new ArrayList<>();
+
             List<Location> locations = allLocations[0];
             Location nearest = locations.get(0);
+            int index = 0;
             for(int i=0; i<locations.size(); i++){
-                if(i>0){
-                    if(Location.findDistance(getApplicationContext(), nearest) >
-                            Location.findDistance(getApplicationContext(), locations.get(i))){
-                        nearest = locations.get(i);
-                    }
+                //TODO: find out why the fuck this does not work
+                float nearestDistance = Location.findDistance(MainActivity.this, nearest, new Listener());
+                float candidateDistance = Location.findDistance(MainActivity.this, locations.get(i), new Listener());
+
+                if(nearestDistance > candidateDistance){
+                    Log.i(TAG, "Location <" + locations.get(i).getId() + "> is closer than <" + nearest.getId() + ">");
+                    nearest = locations.get(i);
+                    index = i;
                 }
             }
+
 
             locationNames.add(nearest.getName());
 
             for(int i=0; i<locations.size(); i++){
-                if(!nearest.equals(locations.get(i))){
+                if(i != index){
                     locationNames.add(locations.get(i).getName());
                 }
             }
@@ -432,6 +473,25 @@ public class MainActivity extends AppCompatActivity {
 
             adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             locationSpinner.setAdapter(adapter);
+        }
+    }
+
+    public class Listener implements OnSuccessListener<android.location.Location> {
+        private float distance;
+        private android.location.Location campus;
+
+        @Override
+        public void onSuccess(android.location.Location location) {
+            Listener.this.distance=location.distanceTo(campus);
+            Log.i(TAG, "calculated distance: " + Listener.this.distance);
+        }
+
+        public float getDistance(){
+            return Listener.this.distance;
+        }
+
+        public void setCampus(android.location.Location campus){
+            Listener.this.campus = campus;
         }
     }
 }

@@ -1,9 +1,21 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import ca.unb.cs.cs2063g8.birdcall.MainActivity;
 
 /**
  * @author nmagee
@@ -75,10 +87,9 @@ public class Location {
 
     public static List<Location> getAllLocations() {
         List<Location> locations = new ArrayList<>();
-
+        locations.add(new Location("Fredericton", "FR", 45.9612631F, -66.63934379999999F));
         locations.add(new Location("Saint John", "SJ", 45.2878008F, -66.0478147F));
         locations.add(new Location("Moncton" , "MO", 46.0845414F, -64.77711339999999F));
-        locations.add(new Location("Fredericton", "FR", 45.9612631F, -66.63934379999999F));
         return locations;
     }
 
@@ -113,30 +124,30 @@ public class Location {
     }
 
     /**
-     * finds the distance between the current location and the given location
-     * @param context application context
-     * @param location the unb location
-     * @return the determined distance
+     * finds the distance between the given campus location and the given user location
+     * @param context context for permissions
+     * @param campusLocation the campus to compare too
+     * @return the distance as a float
      */
-    public static float findDistance(Context context, Location location){
-        ArrayList<String> permissions = new ArrayList<>();
+    public static float findDistance(MainActivity context, Location campusLocation, MainActivity.Listener listener){
+        android.location.Location campus = new android.location.Location("");
+        campus.setLatitude(campusLocation.getLat());
+        campus.setLongitude(campusLocation.getLon());
 
-        /*LocationManager locationManager =
-                (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
 
-        try {
-            android.location.Location loc =
-                    locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            Log.i(TAG, "current - (lat, lon): " + loc.getLatitude() + ", " + loc.getLongitude());
-            Log.i(TAG, "given -(lat, lon): " + location.getLat() + ", " + location.getLon());
+            FusedLocationProviderClient locationClient
+                    = LocationServices.getFusedLocationProviderClient(context);
+            listener.setCampus(campus);
 
-            android.location.Location campus = new android.location.Location("");
-            campus.setLatitude(location.getLat());
-            campus.setLongitude(location.getLon());
-            return loc.distanceTo(campus);
-        } catch (SecurityException e) {
+            locationClient.getLastLocation().addOnSuccessListener(context, listener);
+            return listener.getDistance();
+        }
+        else {
             Log.i(TAG, "could not get location");
-            return 0;
-        }*/
+            return 0F;
+        }
+
     }
 }
