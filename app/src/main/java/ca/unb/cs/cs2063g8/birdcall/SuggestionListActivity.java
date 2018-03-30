@@ -1,4 +1,5 @@
 package ca.unb.cs.cs2063g8.birdcall;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -40,6 +41,7 @@ public class SuggestionListActivity extends AppCompatActivity {
     private List<Course> courseList;
     private Button rerollButton;
     private ListView mListView;
+    private ProgressDialog dialog;
 
     @Override
     public void onResume(){
@@ -107,6 +109,12 @@ public class SuggestionListActivity extends AppCompatActivity {
      */
     private class CourseDownloader extends AsyncTask<String, Integer, String> {
 
+        @Override
+        public void onPreExecute(){
+            dialog = ProgressDialog.show(getApplicationContext(), "",
+                    "Loading. Please wait...", true);
+            dialog.show();
+        }
 
         @Override
         protected String doInBackground(String... requestParams) {
@@ -125,16 +133,12 @@ public class SuggestionListActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPreExecute() {
-            Log.i(TAG, "Not yet implemented onPreExecute()");
-        }
-
-        @Override
         protected void onPostExecute(String result){
             List<Course> suggestionList = Course.randomizer(courseList
                     .toArray(new Course[courseList.size()]), allowWeight);
             CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, suggestionList);
             mListView.setAdapter(courseListAdapter);
+            dialog.dismiss();
         }
 
     }
