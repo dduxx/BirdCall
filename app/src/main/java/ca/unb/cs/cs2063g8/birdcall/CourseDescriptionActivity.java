@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+
 import java.net.MalformedURLException;
 
 import ca.unb.cs.cs2063g8.birdcall.database.FavouriteDBHelper;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.TextView;
+
 
 /**
  * @author Alex

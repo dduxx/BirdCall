@@ -39,6 +39,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -87,6 +89,54 @@ public class MainActivity extends AppCompatActivity {
     private Drawable defaultDOWButton;
     private Drawable selectedDOWButton;
 
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeEventHandler mShakeEventHandler;
+
+    public void submit()
+    {Intent intent = new Intent(getApplicationContext(), SuggestionListActivity.class);
+        intent.putExtra(UNBAccess.ACTION, ACTION);
+        intent.putExtra(UNBAccess.NON_CREDIT, NON_CREDIT);
+        intent.putExtra(UNBAccess.LEVEL, LEVEL);
+        intent.putExtra(UNBAccess.FORMAT, FORMAT);
+
+        String location = "location=" + Location.getLocationByName(
+                locationSpinner.getSelectedItem().toString(),currentLat, currentLon).getId();
+        intent.putExtra(UNBAccess.LOCATION, location);
+
+        String term = "term=" + new Semester(
+                semesterSpinner.getSelectedItem().toString()).getTag();
+        intent.putExtra(UNBAccess.TERM, term);
+
+        String subject = "subject=" + facultyList.get(
+                facultySpinner.getSelectedItemPosition()).getPrefix();
+        intent.putExtra(UNBAccess.SUBJECT, subject);
+        intent.putExtra(Course.COURSE_LEVEL, levelSpinner.getSelectedItem().toString());
+        String days = setDays();
+        if(!days.equals("ALL")){
+            intent.putExtra(Course.DAYS_OFFERED, days);
+        }
+
+        String time = startTimeSpinner.getSelectedItem().toString() + "-" +
+                endTimeSpinner.getSelectedItem().toString();
+        if(!time.contains("Any Time")){
+            intent.putExtra(Course.TIME_SLOT, time);
+        }
+
+        if((time.split("-")[0].equals("Any Time")
+                && !time.split("-")[1].equals("Any Time"))
+                || (!time.split("-")[0].equals("Any Time")
+                && time.split("-")[1].equals("Any Time"))){
+            Toast.makeText(getApplicationContext(),
+                    "If specifying a time you must use both a start and end.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        intent.putExtra(SuggestionListActivity.SEARCH, true);
+        startActivity(intent);
+
+    }
+
     //set default user location to unb fred in case they dont give location permission or do not
     //have them running
     private double currentLat = Location.FR_LAT;
@@ -125,46 +175,16 @@ public class MainActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SuggestionListActivity.class);
-                intent.putExtra(UNBAccess.ACTION, ACTION);
-                intent.putExtra(UNBAccess.NON_CREDIT, NON_CREDIT);
-                intent.putExtra(UNBAccess.LEVEL, LEVEL);
-                intent.putExtra(UNBAccess.FORMAT, FORMAT);
+                submit();
+            }
+        });
 
-                String location = "location=" + Location.getLocationByName(
-                        locationSpinner.getSelectedItem().toString(),currentLat, currentLon).getId();
-                intent.putExtra(UNBAccess.LOCATION, location);
+        mShakeEventHandler.setOnShakeListener(new ShakeEventHandler.OnShakeListener() {
 
-                String term = "term=" + new Semester(
-                        semesterSpinner.getSelectedItem().toString()).getTag();
-                intent.putExtra(UNBAccess.TERM, term);
-
-                String subject = "subject=" + facultyList.get(
-                        facultySpinner.getSelectedItemPosition()).getPrefix();
-                intent.putExtra(UNBAccess.SUBJECT, subject);
-                intent.putExtra(Course.COURSE_LEVEL, levelSpinner.getSelectedItem().toString());
-                String days = setDays();
-                if(!days.equals("ALL")){
-                    intent.putExtra(Course.DAYS_OFFERED, days);
-                }
-
-                String time = startTimeSpinner.getSelectedItem().toString() + "-" +
-                        endTimeSpinner.getSelectedItem().toString();
-                if(!time.contains("Any Time")){
-                    intent.putExtra(Course.TIME_SLOT, time);
-                }
-
-                if((time.split("-")[0].equals("Any Time")
-                        && !time.split("-")[1].equals("Any Time"))
-                        || (!time.split("-")[0].equals("Any Time")
-                        && time.split("-")[1].equals("Any Time"))){
-                    Toast.makeText(getApplicationContext(),
-                            "If specifying a time you must use both a start and end.",
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                intent.putExtra(SuggestionListActivity.SEARCH, true);
-                startActivity(intent);
+            @Override
+            public void onShake(int count)
+            {
+                submit();
             }
         });
 
@@ -487,5 +507,16 @@ public class MainActivity extends AppCompatActivity {
             adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             facultySpinner.setAdapter(adapter);
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(mShakeEventHandler, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    public void onPause() {
+        mSensorManager.unregisterListener(mShakeEventHandler);
+        super.onPause();
     }
 }
