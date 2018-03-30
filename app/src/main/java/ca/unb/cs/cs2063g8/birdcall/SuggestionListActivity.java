@@ -15,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -43,12 +45,23 @@ public class SuggestionListActivity extends AppCompatActivity {
     private ListView mListView;
     private ProgressDialog dialog;
 
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeEventHandler mShakeEventHandler;
+
     @Override
     public void onResume(){
         super.onResume();
+        mSensorManager.registerListener(mShakeEventHandler, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
         if(!getIntent().getBooleanExtra(SEARCH, false)){
             new FavouritesTask().execute();
         }
+    }
+
+    @Override
+    public void onPause() {
+        mSensorManager.unregisterListener(mShakeEventHandler);
+        super.onPause();
     }
 
     @Override
@@ -61,12 +74,26 @@ public class SuggestionListActivity extends AppCompatActivity {
         mListView = findViewById(R.id.course_list);
         rerollButton = findViewById(R.id.reroll_button);
 
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mShakeEventHandler = new ShakeEventHandler();
+
         rerollButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 populate();
             }
         });
+
+        mShakeEventHandler.setOnShakeListener(new ShakeEventHandler.OnShakeListener() {
+
+            @Override
+            public void onShake(int count)
+            {
+                populate();
+            }
+        });
+
         populate();
     }
 
