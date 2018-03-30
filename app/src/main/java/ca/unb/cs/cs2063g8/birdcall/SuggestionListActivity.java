@@ -111,9 +111,7 @@ public class SuggestionListActivity extends AppCompatActivity {
 
         @Override
         public void onPreExecute(){
-            dialog = ProgressDialog.show(getApplicationContext(), "",
-                    "Loading. Please wait...", true);
-            dialog.show();
+
         }
 
         @Override
@@ -138,7 +136,6 @@ public class SuggestionListActivity extends AppCompatActivity {
                     .toArray(new Course[courseList.size()]), allowWeight);
             CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, suggestionList);
             mListView.setAdapter(courseListAdapter);
-            dialog.dismiss();
         }
 
     }
