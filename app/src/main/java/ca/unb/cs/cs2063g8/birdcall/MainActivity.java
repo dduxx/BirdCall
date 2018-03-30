@@ -142,7 +142,9 @@ public class MainActivity extends AppCompatActivity {
         blacklistButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Toast.makeText(getApplicationContext(), "Blacklist not yet complete", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Blacklist not yet complete", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), BlackListActivity.class);
+                startActivity(intent);
             }
         });
 

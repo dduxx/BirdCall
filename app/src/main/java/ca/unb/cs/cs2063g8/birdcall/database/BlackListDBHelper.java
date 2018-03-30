@@ -12,18 +12,18 @@ public class BlackListDBHelper extends DBHelper {
 
     private static final int DATABASE_VERSION = 2;
     public static final String TABLE_NAME = "blacklist";
-    final static String _ID = "_id";
+    final static String ID = "_id";
     public static final String TYPE = "type";
     public static final String NAME = "name";
 
     private static final String TABLE_CREATE =
-            "CREATE TABLE " + TABLE_NAME + " (" + _ID
+            "CREATE TABLE " + TABLE_NAME + " (" + ID
                     + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + TYPE + " TEXT, " +
                     NAME + " TEXT);";
 
     private static final String TAG = "BlackListDBHelper";
-    final static String[] COLUMNS = { _ID, TYPE, NAME };
+    final static String[] COLUMNS = { ID, TYPE, NAME };
 
 
     public BlackListDBHelper(Context context) {
