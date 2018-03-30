@@ -23,15 +23,16 @@ public class Semester {
 
     public Semester(String name){
         this.name = name;
-        String tag = name.split("\\s")[1];
+        String year = name.split("\\s")[1];
+        String tag = name.split("\\s")[0];
         if(tag.contains("Summer")){
-            tag = tag + "/SM";
+            tag = year + "/SM";
         }
         else if(tag.contains("Winter")){
-            tag = tag + "/WI";
+            tag = year + "/WI";
         }
         else{
-            tag = tag + "/FA";
+            tag = year + "/FA";
         }
         this.tag = tag;
     }
