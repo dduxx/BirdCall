@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
             alertDialog.show();
-            final Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            final Button button = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
             LinearLayout.LayoutParams buttonLL = (LinearLayout.LayoutParams) button.getLayoutParams();
             buttonLL.gravity = Gravity.CENTER;
             button.setLayoutParams(buttonLL);
