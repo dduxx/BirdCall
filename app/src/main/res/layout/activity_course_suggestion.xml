@@ -28,4 +28,11 @@
         android:layout_alignParentRight="true"
         android:layout_margin="25dp"
         android:layout_alignParentBottom="true"/>
+
+    <TextView
+        android:id="@+id/count_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"/>
 </RelativeLayout>

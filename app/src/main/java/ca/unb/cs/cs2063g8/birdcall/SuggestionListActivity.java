@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +44,7 @@ public class SuggestionListActivity extends AppCompatActivity {
     private Button rerollButton;
     private ListView mListView;
     private ProgressBar progress;
+    private TextView count;
 
     @Override
     public void onResume(){
@@ -68,6 +70,7 @@ public class SuggestionListActivity extends AppCompatActivity {
                 populate();
             }
         });
+        count = findViewById(R.id.count_id);
         populate();
     }
 
@@ -138,6 +141,14 @@ public class SuggestionListActivity extends AppCompatActivity {
             CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, suggestionList);
             mListView.setAdapter(courseListAdapter);
             progress.setVisibility(View.INVISIBLE);
+            if(courseList != null){
+                count.setText("Courses Found: " + courseList.size());
+                count.setTextColor(Color.BLACK);
+            }
+            else{
+                count.setText("Courses Found: 0");
+                count.setTextColor(Color.BLACK);
+            }
         }
 
     }
@@ -177,10 +188,18 @@ public class SuggestionListActivity extends AppCompatActivity {
                     } catch(MalformedURLException e){
                         result.moveToNext();
                     }
-
+                    courseList = favourites;
                     CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, favourites);
                     mListView.setAdapter(courseListAdapter);
                 }
+            }
+            if(courseList != null){
+                count.setText("Courses Found: " + courseList.size());
+                count.setTextColor(Color.BLACK);
+            }
+            else{
+                count.setText("Courses Found: 0");
+                count.setTextColor(Color.BLACK);
             }
         }
     }
