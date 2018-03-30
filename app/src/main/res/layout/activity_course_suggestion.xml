@@ -6,10 +6,52 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:background="@drawable/outline"
+        android:id="@+id/titlebar">
+
+        <TextView
+            android:layout_width="70dp"
+            android:layout_height="35dp"
+            android:layout_gravity="left"
+            android:layout_alignParentLeft="true"
+            android:textColor="@android:color/black"
+            android:background="@android:color/darker_gray"
+            android:text="ID"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:textColor="@android:color/black"
+            android:text="Name"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:layout_width="70dp"
+            android:layout_height="35dp"
+            android:layout_alignParentRight="true"
+            android:textColor="@android:color/black"
+            android:background="@android:color/darker_gray"
+            android:gravity="right"
+            android:text="Open Seats"
+            android:textStyle="bold"
+            />
+    </RelativeLayout>
+
     <ListView
         android:layout_width="match_parent"
         android:id="@+id/course_list"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/titlebar"/>
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -34,5 +76,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentLeft="true"
+        android:layout_margin="25dp"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
 </RelativeLayout>
