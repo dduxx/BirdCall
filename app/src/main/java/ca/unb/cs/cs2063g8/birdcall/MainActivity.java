@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.concurrent.ExecutionException;
 
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
@@ -37,6 +40,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 /**
@@ -80,11 +87,22 @@ public class MainActivity extends AppCompatActivity {
     private Drawable defaultDOWButton;
     private Drawable selectedDOWButton;
 
+    //set default user location to unb fred in case they dont give location permission or do not
+    //have them running
+    private double currentLat = Location.FR_LAT;
+    private double currentLon = Location.FR_LON;
+
+    private FusedLocationProviderClient client;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        client = LocationServices.getFusedLocationProviderClient(this);
+
+        requestPermissions();
 
         defaultDOWButton = getResources().getDrawable(R.drawable.day_of_week_button);
         selectedDOWButton = getResources().getDrawable(R.drawable.day_of_week_selected_button);
@@ -114,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(UNBAccess.FORMAT, FORMAT);
 
                 String location = "location=" + Location.getLocationByName(
-                        locationSpinner.getSelectedItem().toString()).getId();
+                        locationSpinner.getSelectedItem().toString(),currentLat, currentLon).getId();
                 intent.putExtra(UNBAccess.LOCATION, location);
 
                 String term = "term=" + new Semester(
@@ -330,8 +348,30 @@ public class MainActivity extends AppCompatActivity {
      *     try to detect location
      */
     private void populateLocationSpinner(){
-        Log.i(TAG, "starting location task");
+        locationSpinner = findViewById(R.id.location_spinner);
         requestPermissions();
+
+        List<String> names = new ArrayList<>();
+
+        Location nearest = Location.getAllLocations(currentLat, currentLon).get(0);
+        for(Location l : Location.getAllLocations(currentLat, currentLon)){
+            if(nearest.findDistance() > l.findDistance()){
+                nearest = l;
+            }
+        }
+
+        names.add(nearest.getName());
+        for(Location l : Location.getAllLocations(currentLat, currentLon)){
+            if(!l.equals(nearest)){
+                names.add(l.getName());
+            }
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, names);
+
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        locationSpinner.setAdapter(adapter);
     }
 
     /**
@@ -376,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         } else {
             Log.i(TAG, "requestPermissions: Have permissions");
-            new LocationTask().execute(Location.getAllLocations());
+            getLocation();
         }
     }
 
@@ -390,12 +430,29 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.i(TAG, "onRequestPermissionsResult: Granted");
-                    new LocationTask().execute(Location.getAllLocations());
+                    getLocation();
                 } else {
                     Log.i(TAG, "onRequestPermissionsResult: Denied");
-                    new LocationTask().execute(Location.getAllLocations());
                 }
             }
+        }
+    }
+
+    private void getLocation(){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED){
+            client.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<android.location.Location>() {
+                @Override
+                public void onSuccess(android.location.Location location) {
+                    if(location != null){
+                        Log.i(TAG, "GPS Coordinates: ("
+                                + location.getLatitude() + ", "
+                                + location.getLongitude() + ")");
+                        currentLat = location.getLatitude();
+                        currentLon = location.getLongitude();
+                    }
+                }
+            });
         }
     }
 
@@ -427,68 +484,6 @@ public class MainActivity extends AppCompatActivity {
 
             adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             facultySpinner.setAdapter(adapter);
-        }
-    }
-
-    public class LocationTask extends AsyncTask<List<Location>, Void, List<String>>{
-
-
-        @Override
-        protected List<String> doInBackground(List<Location>... allLocations) {
-            List<String> locationNames = new ArrayList<>();
-
-            List<Location> locations = allLocations[0];
-            for(int i=0; i<locations.size(); i++){
-                locations.get(i).setDistance(MainActivity.this, new Listener());
-            }
-
-            Location nearest = locations.get(0);
-            for(int i=0; i<locations.size(); i++){
-                if(nearest.getDistance() > locations.get(i).getDistance()){
-                    nearest = locations.get(i);
-                }
-            }
-
-            locationNames.add(nearest.getName());
-
-            for(Location l : locations){
-                if(!l.equals(nearest)){
-                    locationNames.add(l.getName());
-                }
-            }
-
-            return locationNames;
-        }
-
-        @Override
-        protected void onPostExecute(List<String> result){
-            locationSpinner = findViewById(R.id.location_spinner);
-
-            ArrayAdapter<String> adapter =
-                    new ArrayAdapter<>(MainActivity.this,
-                            android.R.layout.simple_spinner_item, result);
-
-            adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-            locationSpinner.setAdapter(adapter);
-        }
-    }
-
-    public class Listener implements OnSuccessListener<android.location.Location> {
-        private float distance;
-        private android.location.Location campus;
-
-        @Override
-        public void onSuccess(android.location.Location location) {
-            this.distance=location.distanceTo(campus);
-            Log.i(TAG, "calculated distance: " + getDistance());
-        }
-
-        public float getDistance(){
-            return this.distance;
-        }
-
-        public void setCampus(android.location.Location campus){
-            this.campus = campus;
         }
     }
 }
