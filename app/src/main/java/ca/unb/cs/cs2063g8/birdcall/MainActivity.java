@@ -166,6 +166,10 @@ public class MainActivity extends AppCompatActivity {
         thursdayButton = findViewById(R.id.day_of_week_thurs);
         fridayButton = findViewById(R.id.day_of_week_fri);
 
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mShakeEventHandler = new ShakeEventHandler();
+
         populateLocationSpinner();
         populateLevelSpinner();
         populateFacultySpinner();
