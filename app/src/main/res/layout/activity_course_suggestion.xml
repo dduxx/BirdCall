@@ -11,6 +11,14 @@
         android:id="@+id/course_list"
         android:layout_height="wrap_content"/>
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"/>
+
     <Button
         android:id="@+id/reroll_button"
         android:layout_width="50dp"

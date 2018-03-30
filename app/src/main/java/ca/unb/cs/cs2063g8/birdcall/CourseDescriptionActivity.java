@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.TextView;
 
@@ -38,19 +40,20 @@ public class CourseDescriptionActivity extends AppCompatActivity {
     private TextView timeSlot;
     private TextView professor;
     private Description description;
-    private Button favourite;
     private Boolean isFavourite = false;
+    private ProgressBar progress;
 
     private FavouriteDBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        favourite = findViewById(R.id.set_fav);
         dbHelper = new FavouriteDBHelper(this);
 
         setContentView(R.layout.course_description_activity);
         courseDescription = findViewById(R.id.course_full_description_id);
+        progress = findViewById(R.id.progress_bar);
+        progress.setVisibility(View.INVISIBLE);
         prereqs = findViewById(R.id.prereqs_id);
         Intent intent = this.getIntent();
         courseID = findViewById(R.id.course_id);
@@ -59,7 +62,6 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         daysOffered = findViewById(R.id.days_offered_id);
         timeSlot = findViewById(R.id.time_slot_id);
         professor = findViewById(R.id.professor_id);
-        favourite = findViewById(R.id.set_fav);
 
         new DescriptionDownloader().execute(intent.getStringExtra(Course.DESCRIPTION));
         courseID.setText(intent.getStringExtra(Course.COURSE_ID));
@@ -81,7 +83,7 @@ public class CourseDescriptionActivity extends AppCompatActivity {
                 intent.getStringExtra(Course.TIME_SLOT),
                 intent.getStringExtra(Course.DESCRIPTION));
 
-        favourite.setOnClickListener(new View.OnClickListener(){
+        courseName.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 if(!isFavourite){
@@ -113,7 +115,13 @@ public class CourseDescriptionActivity extends AppCompatActivity {
     }
 
     public class DescriptionDownloader extends AsyncTask<String, Integer, String> {
-       protected String doInBackground(String... params) {
+        @Override
+        protected void onPreExecute(){
+            progress.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
             String url = params[0];
             try {
                 description = new Description(url);
@@ -127,20 +135,23 @@ public class CourseDescriptionActivity extends AppCompatActivity {
             return "Download Complete";
 
        }
-        protected void onPostExecute(String result) {
+
+       @Override
+       protected void onPostExecute(String result) {
             Log.i(TAG, result);
             Log.i(TAG, "setting desc: " + description.getDescription());
             courseDescription.setText(description.getDescription());
             Log.i(TAG, "setting prereq: " + description.getPrereqs());
             prereqs.setText(description.getPrereqs());
-        }
+            progress.setVisibility(View.INVISIBLE);
+       }
     }
 
     private class CheckFavTask extends AsyncTask<String, Void, Cursor>{
         @Override
         protected  void onPreExecute(){
             //disable the favorite button until we resolve if it is in the db.
-            favourite.setEnabled(false);
+            courseName.setEnabled(false);
         }
 
         @Override
@@ -176,22 +187,22 @@ public class CourseDescriptionActivity extends AppCompatActivity {
             Drawable isFav = getResources().getDrawable(R.drawable.is_fav_icon);
             if(result.getCount() == 0){
                 Log.i(TAG, "Course not found in favorites");
-                favourite.setBackgroundDrawable(notFav);
+                courseName.setTextColor(Color.BLACK);
                 isFavourite = false;
             }
             else{
                 Log.i(TAG, "Course is in the favourites");
-                favourite.setBackgroundDrawable(isFav);
+                courseName.setTextColor(Color.RED);
                 isFavourite = true;
             }
-            favourite.setEnabled(true);
+            courseName.setEnabled(true);
         }
     }
 
     private class AddFavTask extends AsyncTask<String, Void, Void>{
         @Override
         protected  void onPreExecute(){
-            favourite.setEnabled(false);
+            courseName.setEnabled(false);
         }
 
         @Override
@@ -221,9 +232,9 @@ public class CourseDescriptionActivity extends AppCompatActivity {
         @Override
         protected  void onPostExecute(Void result){
             Drawable isFav = getResources().getDrawable(R.drawable.is_fav_icon);
-            favourite.setBackgroundDrawable(isFav);
+            courseName.setTextColor(Color.RED);
             isFavourite = true;
-            favourite.setEnabled(true);
+            courseName.setEnabled(true);
             Toast.makeText(getApplicationContext(), "Added to favourites", Toast.LENGTH_SHORT).show();
         }
     }
@@ -231,7 +242,7 @@ public class CourseDescriptionActivity extends AppCompatActivity {
     private class DeleteTask extends AsyncTask<String, Void, Void>{
         @Override
         protected  void onPreExecute(){
-            favourite.setEnabled(false);
+            courseName.setEnabled(false);
         }
 
         @Override
@@ -261,10 +272,9 @@ public class CourseDescriptionActivity extends AppCompatActivity {
 
         @Override
         protected  void onPostExecute(Void result){
-            Drawable notFav = getResources().getDrawable(R.drawable.not_fav_icon);
-            favourite.setBackgroundDrawable(notFav);
+            courseName.setTextColor(Color.BLACK);
             isFavourite = false;
-            favourite.setEnabled(true);
+            courseName.setEnabled(true);
             Toast.makeText(getApplicationContext(), "Removed from favourites", Toast.LENGTH_SHORT).show();
         }
     }

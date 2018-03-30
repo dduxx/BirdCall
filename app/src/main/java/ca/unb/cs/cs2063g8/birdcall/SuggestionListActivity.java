@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.net.MalformedURLException;
@@ -41,7 +42,7 @@ public class SuggestionListActivity extends AppCompatActivity {
     private List<Course> courseList;
     private Button rerollButton;
     private ListView mListView;
-    private ProgressDialog dialog;
+    private ProgressBar progress;
 
     @Override
     public void onResume(){
@@ -60,7 +61,7 @@ public class SuggestionListActivity extends AppCompatActivity {
         Log.i(TAG, "weighted selection is: " + allowWeight);
         mListView = findViewById(R.id.course_list);
         rerollButton = findViewById(R.id.reroll_button);
-
+        progress = findViewById(R.id.progress_bar);
         rerollButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,7 +112,7 @@ public class SuggestionListActivity extends AppCompatActivity {
 
         @Override
         public void onPreExecute(){
-
+            progress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -136,6 +137,7 @@ public class SuggestionListActivity extends AppCompatActivity {
                     .toArray(new Course[courseList.size()]), allowWeight);
             CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, suggestionList);
             mListView.setAdapter(courseListAdapter);
+            progress.setVisibility(View.INVISIBLE);
         }
 
     }
@@ -145,6 +147,7 @@ public class SuggestionListActivity extends AppCompatActivity {
         @Override
         protected  void onPreExecute(){
             Log.i(TAG, "Loading favourites");
+            progress.setVisibility(View.INVISIBLE);
         }
 
         @Override

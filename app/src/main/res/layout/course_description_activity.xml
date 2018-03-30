@@ -24,18 +24,11 @@
         android:id="@+id/course_name_id"
         android:layout_height="50dp"
         android:layout_width="wrap_content"
-        android:gravity="left"
-        android:layout_toRightOf="@id/course_id"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
         android:text="Course_Name"
         android:textColor="@android:color/black"
         />
-        <Button
-            android:id="@+id/set_fav"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_toLeftOf="@id/seats_open_id"
-            android:background="@drawable/not_fav_icon"/>
     <TextView
         android:id="@+id/seats_open_id"
         android:layout_width="70dp"
@@ -45,7 +38,6 @@
         android:gravity="right"
         android:textColor="@android:color/black"
         android:background="@android:color/darker_gray"
-        android:text="Seats_Open"
         />
 
 
@@ -104,4 +96,10 @@
         android:textColor="@android:color/black"
         android:background="@android:color/darker_gray"
         />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
