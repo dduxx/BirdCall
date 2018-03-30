@@ -41,4 +41,5 @@ public class BlackListDBHelper extends SQLiteOpenHelper {
     public void onUpgrade (SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.i(TAG, "onUpgrade");
     }
+    
 }

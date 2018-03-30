@@ -6,15 +6,24 @@
 
     <TextView
         android:id="@+id/type_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:gravity="center"
+        android:textSize="12pt"
+        android:layout_width="150dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_height="50dp"
+        />
 
     <TextView
         android:id="@+id/name_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/type_text_view">
+        android:gravity="center"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_toRightOf="@id/type_text_view"
+        android:textSize="12pt">
     </TextView>
 
 </RelativeLayout>

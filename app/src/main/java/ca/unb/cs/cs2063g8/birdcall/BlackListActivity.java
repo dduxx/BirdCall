@@ -1,6 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -100,6 +102,8 @@ public class BlackListActivity extends AppCompatActivity {
 
                     PopulateListTask updateList = new PopulateListTask();
                     updateList.execute();
+                    InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    mgr.hideSoftInputFromWindow(nameEditText.getWindowToken(), 0);
 
                 }
                 else{
