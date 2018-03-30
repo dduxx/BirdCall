@@ -2,15 +2,16 @@ package ca.unb.cs.cs2063g8.birdcall.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
  * Created by jason on 16/03/18.
  */
 
-public class BlackListDBHelper extends DBHelper {
-
-    private static final int DATABASE_VERSION = 2;
+public class BlackListDBHelper extends SQLiteOpenHelper {
+    public static final String DATABASE_NAME = "blacklist_db";
+    public static final int DATABASE_VERSION = 1;
     public static final String TABLE_NAME = "blacklist";
     public final static String ID = "_id";
     public static final String TYPE = "type";
@@ -27,7 +28,7 @@ public class BlackListDBHelper extends DBHelper {
 
 
     public BlackListDBHelper(Context context) {
-        super(context);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
 
