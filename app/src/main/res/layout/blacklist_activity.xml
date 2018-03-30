@@ -4,44 +4,31 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ScrollView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView"
-        android:layout_centerHorizontal="true">
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        android:id="@+id/name_edit_text"
+        android:layout_toRightOf="@id/type_spinner"
+        android:textAlignment="center"
+        android:width="140dp"
+        />
 
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/name"
-                android:layout_toRightOf="@id/type"
-                android:textAlignment="center"
-                android:width="140dp"
-                />
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/type_spinner"
+        android:textAlignment="center"
+        android:minWidth="140dp">
 
-            <Spinner
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/type"
-                android:textAlignment="center"
-                android:minWidth="140dp">
+    </Spinner>
 
-            </Spinner>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/add"
-                android:layout_toRightOf="@+id/name"
-                android:width="70dp"
-                />
-
-        </RelativeLayout>
-
-    </ScrollView>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/add_button"
+        android:layout_toRightOf="@+id/name"
+        android:width="70dp"
+        />
 
 
 

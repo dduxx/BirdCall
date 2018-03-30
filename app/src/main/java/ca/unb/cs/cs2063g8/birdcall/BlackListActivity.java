@@ -1,5 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 
 import ca.unb.cs.cs2063g8.birdcall.database.BlackListDBHelper;
+import ca.unb.cs.cs2063g8.birdcall.database.DBHelper;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Description;
 
 /**
@@ -29,26 +32,26 @@ public class BlackListActivity extends AppCompatActivity {
 
     private BlackListDBHelper blackListDBHelper;
     private Button addButton;
-    private EditText name;
+    private EditText nameEditText;
     private RecyclerView recyclerView;
     private static final String TAG = "BlackListActivity";
-
-    private Drawable add;
-    private Drawable remove;
+    private Spinner typeSpinner;
 
     protected void onCreate(Bundle savedInstanceState ){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.blacklist_activity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        addButton = findViewById(R.id.add_remove);
-        name = findViewById(R.id.name);
+        addButton = findViewById(R.id.add_button);
+        nameEditText = findViewById(R.id.name_edit_text);
+        typeSpinner = findViewById(R.id.type_spinner);
 
         populateTypeSpinner();
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                AddTask addTask = new AddTask();
+                addTask.execute(typeSpinner.getSelectedItem().toString(),nameEditText.getText().toString());
             }
         });
 
@@ -56,8 +59,6 @@ public class BlackListActivity extends AppCompatActivity {
     }
 
     private void populateTypeSpinner(){
-        Spinner type = (Spinner) findViewById(R.id.type);
-
         final String TYPES[] = {"Course","Professor","Faculty"};
 
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -66,18 +67,31 @@ public class BlackListActivity extends AppCompatActivity {
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        type.setAdapter(adapter);
+        typeSpinner.setAdapter(adapter);
 
     }
 
-    private void addOrRemove(Button button, Boolean isFirst){
-        if(isFirst){
-            button.setBackgroundDrawable(add);
+
+    private class AddTask extends AsyncTask<String, Void, Void> {
+
+        protected Void doInBackground(String... params) {
+            String name = params[0];
+            String type = params[1];
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(BlackListDBHelper.NAME,name);
+            contentValues.put(BlackListDBHelper.TYPE,type);
+
+            SQLiteDatabase db = blackListDBHelper.getWritableDatabase();
+            db.insert(blackListDBHelper.TABLE_NAME,null,contentValues);
+            return null;
         }
-        else{
-            button.setBackgroundDrawable(remove);
+
+        protected void onPostExecute(Void result) {
+            nameEditText.setText("");
+            typeSpinner.setSelection(0);
         }
     }
+
     /*
     So the game plan is going to be a hard coded seperate thing at the top that looks like the list below think about it as two seperate things.
 
