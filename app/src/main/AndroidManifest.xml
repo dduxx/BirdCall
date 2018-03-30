@@ -27,6 +27,9 @@
         <activity android:name=".CourseDescriptionActivity">
             
         </activity>
+        <activity android:name=".BlackListActivity">
+
+        </activity>
     </application>
 
 </manifest>
