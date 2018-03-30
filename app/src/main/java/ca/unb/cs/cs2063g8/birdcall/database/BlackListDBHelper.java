@@ -12,7 +12,7 @@ public class BlackListDBHelper extends DBHelper {
 
     private static final int DATABASE_VERSION = 2;
     public static final String TABLE_NAME = "blacklist";
-    final static String ID = "_id";
+    public final static String ID = "_id";
     public static final String TYPE = "type";
     public static final String NAME = "name";
 
@@ -23,7 +23,7 @@ public class BlackListDBHelper extends DBHelper {
                     NAME + " TEXT);";
 
     private static final String TAG = "BlackListDBHelper";
-    final static String[] COLUMNS = { ID, TYPE, NAME };
+    public final static String[] COLUMNS = { ID, TYPE, NAME };
 
 
     public BlackListDBHelper(Context context) {
