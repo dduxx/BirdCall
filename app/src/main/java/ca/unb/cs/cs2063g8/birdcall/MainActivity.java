@@ -1,18 +1,26 @@
 package ca.unb.cs.cs2063g8.birdcall;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
@@ -29,6 +37,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+
 /**
  * @author nmagee
  * date: 2018-02-21
@@ -36,6 +46,7 @@ import android.widget.Toast;
  */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     private final String ACTION = "action=index";
     private final String NON_CREDIT = "noncredit=0";
@@ -277,10 +288,10 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean dayOfWeekSelect(Button button, Boolean isSelected){
         if(isSelected){
-            button.setBackgroundDrawable(defaultDOWButton);
+            button.setBackground(defaultDOWButton);
         }
         else{
-            button.setBackgroundDrawable(selectedDOWButton);
+            button.setBackground(selectedDOWButton);
         }
         return !isSelected;
     }
@@ -321,21 +332,8 @@ public class MainActivity extends AppCompatActivity {
      *     try to detect location
      */
     private void populateLocationSpinner(){
-        List<Location> locations = Location.getAllLocations();
-
-        ArrayList<String> locationNames = new ArrayList<>();
-
-        for(Location l : locations){
-            locationNames.add(l.getName());
-        }
-        locationSpinner = findViewById(R.id.location_spinner);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, locationNames);
-
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        locationSpinner.setAdapter(adapter);
-        locationSpinner = Location.determineLocation(getApplicationContext(), locationSpinner);
+        Log.i(TAG, "starting location task");
+        requestPermissions();
     }
 
     /**
@@ -371,6 +369,38 @@ public class MainActivity extends AppCompatActivity {
         endTimeSpinner.setAdapter(endAdapter);
     }
 
+    public void requestPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "requestPermissions: No permissions");
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        } else {
+            Log.i(TAG, "requestPermissions: Have permissions");
+            new LocationTask().execute(Location.getAllLocations());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[],
+                                           int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "onRequestPermissionsResult: Granted");
+                    new LocationTask().execute(Location.getAllLocations());
+                } else {
+                    Log.i(TAG, "onRequestPermissionsResult: Denied");
+                    new LocationTask().execute(Location.getAllLocations());
+                }
+            }
+        }
+    }
+
     public class FacultyDownloader extends AsyncTask<String, Integer, String> {
 
 
@@ -399,6 +429,68 @@ public class MainActivity extends AppCompatActivity {
 
             adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             facultySpinner.setAdapter(adapter);
+        }
+    }
+
+    public class LocationTask extends AsyncTask<List<Location>, Void, List<String>>{
+
+
+        @Override
+        protected List<String> doInBackground(List<Location>... allLocations) {
+            List<String> locationNames = new ArrayList<>();
+
+            List<Location> locations = allLocations[0];
+            for(int i=0; i<locations.size(); i++){
+                locations.get(i).setDistance(MainActivity.this, new Listener());
+            }
+
+            Location nearest = locations.get(0);
+            for(int i=0; i<locations.size(); i++){
+                if(nearest.getDistance() > locations.get(i).getDistance()){
+                    nearest = locations.get(i);
+                }
+            }
+
+            locationNames.add(nearest.getName());
+
+            for(Location l : locations){
+                if(!l.equals(nearest)){
+                    locationNames.add(l.getName());
+                }
+            }
+
+            return locationNames;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result){
+            locationSpinner = findViewById(R.id.location_spinner);
+
+            ArrayAdapter<String> adapter =
+                    new ArrayAdapter<>(MainActivity.this,
+                            android.R.layout.simple_spinner_item, result);
+
+            adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+            locationSpinner.setAdapter(adapter);
+        }
+    }
+
+    public class Listener implements OnSuccessListener<android.location.Location> {
+        private float distance;
+        private android.location.Location campus;
+
+        @Override
+        public void onSuccess(android.location.Location location) {
+            this.distance=location.distanceTo(campus);
+            Log.i(TAG, "calculated distance: " + getDistance());
+        }
+
+        public float getDistance(){
+            return this.distance;
+        }
+
+        public void setCampus(android.location.Location campus){
+            this.campus = campus;
         }
     }
 }
