@@ -13,30 +13,21 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.concurrent.ExecutionException;
 
 import ca.unb.cs.cs2063g8.birdcall.database.BlackListDBHelper;
 import ca.unb.cs.cs2063g8.birdcall.database.BlacklistItem;
-import ca.unb.cs.cs2063g8.birdcall.database.FavouriteDBHelper;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Location;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Semester;
 import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
-
-import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -47,13 +38,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 

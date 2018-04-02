@@ -16,11 +16,8 @@ import java.net.MalformedURLException;
 import ca.unb.cs.cs2063g8.birdcall.database.FavouriteDBHelper;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Description;
-
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.TextView;

@@ -1,6 +1,5 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
-import android.nfc.Tag;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
