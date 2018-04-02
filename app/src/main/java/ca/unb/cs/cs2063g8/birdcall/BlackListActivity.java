@@ -45,7 +45,6 @@ public class BlackListActivity extends AppCompatActivity {
         setContentView(R.layout.blacklist_activity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         addButton = findViewById(R.id.add_button);
-        addButton.setText("Add");
         nameEditText = findViewById(R.id.name_edit_text);
         typeSpinner = findViewById(R.id.type_spinner);
         blackListDBHelper = new BlackListDBHelper(this);

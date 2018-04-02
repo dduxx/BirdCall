@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/name_edit_text"
-        android:layout_toRightOf="@id/type_spinner"
+        android:layout_centerHorizontal="true"
         android:textAlignment="center"
         android:width="140dp"
         />
@@ -20,23 +20,26 @@
         android:layout_height="wrap_content"
         android:id="@+id/type_spinner"
         android:textAlignment="center"
-        android:minWidth="140dp">
+        android:minWidth="140dp"
+        android:layout_alignParentLeft="true">
 
     </Spinner>
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:id="@+id/add_button"
-        android:layout_toRightOf="@+id/name_edit_text"
-        android:width="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@mipmap/add_button"
         />
 
     <ListView
         android:layout_width="match_parent"
         android:id="@+id/listview"
-        android:layout_height="match_parent"
-        android:layout_below="@id/name_edit_text"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_button"/>
 
 
 
