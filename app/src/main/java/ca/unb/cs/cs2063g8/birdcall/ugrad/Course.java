@@ -191,7 +191,7 @@ public class Course implements Comparable<Course>{
 
             while(rows.hasNext()){
                 Elements cells = rows.next().children();
-                if(cells.size() != 9){
+                if(cells.size() < 9){
                     continue;
                 }
                 else{
