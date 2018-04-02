@@ -1,5 +1,7 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -119,6 +121,8 @@ public class Location{
      * @return float distance
      */
     public float findDistance(){
+        Log.i(TAG, "finding distance between: (" + currentLat + ", " + currentLon + ") " +
+                "and " + id + ": (" + lat + ", " + lon + ")");
         android.location.Location campus = new android.location.Location("");
         campus.setLongitude(this.lon);
         campus.setLatitude(this.lat);
@@ -126,8 +130,9 @@ public class Location{
         android.location.Location current = new android.location.Location("");
         current.setLatitude(currentLat);
         current.setLongitude(currentLon);
-
-        return current.distanceTo(campus);
+        float distance = current.distanceTo(campus);
+        Log.i(TAG, "distance calculated: " + distance);
+        return distance;
     }
 
     public static List<Location> getAllLocations(double currentLat, double currentLon) {

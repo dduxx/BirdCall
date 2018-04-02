@@ -13,6 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_height="50dp"
+        android:textColor="@android:color/black"
         />
 
     <TextView
@@ -23,7 +24,8 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_toRightOf="@id/type_text_view"
-        android:textSize="12pt">
+        android:textSize="12pt"
+        android:textColor="@android:color/black">
     </TextView>
 
 </RelativeLayout>

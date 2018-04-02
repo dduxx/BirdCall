@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import ca.unb.cs.cs2063g8.birdcall.database.BlacklistItem;
 import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
 /**
@@ -167,7 +168,9 @@ public class Course implements Comparable<Course>{
      * @param formParams
      * @return the full list of courses
      */
-    public static List<Course> getCourseList(Map<String, String> filters, String... formParams){
+    public static List<Course> getCourseList(Map<String, String> filters,
+                                             List<BlacklistItem> blackListItems,
+                                             String... formParams){
         List<Course> courses = new ArrayList<>();
         Log.i(TAG, "given filters:");
 
@@ -237,6 +240,34 @@ public class Course implements Comparable<Course>{
 
                     if(openSeats <= 0){
                         Log.i(TAG, "Course: " + id + " is full");
+                        continue;
+                    }
+
+                    boolean blacklisted = false;
+                    for(BlacklistItem item : blackListItems){
+                        if(item.getName().equalsIgnoreCase(BlacklistItem.TYPE_PROF)){
+                            if(professor.toLowerCase().contains(item.getType().toLowerCase())){
+                                Log.i(TAG, "professor was blacklisted. skipping course: " + id);
+                                blacklisted = true;
+                            }
+                        }
+
+                        if(item.getName().equalsIgnoreCase(BlacklistItem.TYPE_FAC)){
+                            if(id.toLowerCase().contains(item.getType().toLowerCase())){
+                                Log.i(TAG, "faculty was blacklisted, skipping course: " + id);
+                                blacklisted = true;
+                            }
+                        }
+
+                        if(item.getName().equalsIgnoreCase(BlacklistItem.TYPE_COURSE)){
+                            if(id.toLowerCase().equals(item.getType().toLowerCase())){
+                                Log.i(TAG, "course was blacklisted, skipping course: " + id);
+                                blacklisted = true;
+                            }
+                        }
+                    }
+
+                    if(blacklisted){
                         continue;
                     }
 

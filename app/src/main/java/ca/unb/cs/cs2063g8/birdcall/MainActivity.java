@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,12 +27,16 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.ExecutionException;
 
+import ca.unb.cs.cs2063g8.birdcall.database.BlackListDBHelper;
+import ca.unb.cs.cs2063g8.birdcall.database.BlacklistItem;
+import ca.unb.cs.cs2063g8.birdcall.database.FavouriteDBHelper;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Faculty;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Location;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Semester;
 import ca.unb.cs.cs2063g8.birdcall.web.UNBAccess;
 
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -46,7 +52,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
 
 /**
  * @author nmagee
@@ -93,50 +102,6 @@ public class MainActivity extends AppCompatActivity {
     private Sensor mAccelerometer;
     private ShakeEventHandler mShakeEventHandler;
 
-    public void submit()
-    {Intent intent = new Intent(getApplicationContext(), SuggestionListActivity.class);
-        intent.putExtra(UNBAccess.ACTION, ACTION);
-        intent.putExtra(UNBAccess.NON_CREDIT, NON_CREDIT);
-        intent.putExtra(UNBAccess.LEVEL, LEVEL);
-        intent.putExtra(UNBAccess.FORMAT, FORMAT);
-
-        String location = "location=" + Location.getLocationByName(
-                locationSpinner.getSelectedItem().toString(),currentLat, currentLon).getId();
-        intent.putExtra(UNBAccess.LOCATION, location);
-
-        String term = "term=" + new Semester(
-                semesterSpinner.getSelectedItem().toString()).getTag();
-        intent.putExtra(UNBAccess.TERM, term);
-
-        String subject = "subject=" + facultyList.get(
-                facultySpinner.getSelectedItemPosition()).getPrefix();
-        intent.putExtra(UNBAccess.SUBJECT, subject);
-        intent.putExtra(Course.COURSE_LEVEL, levelSpinner.getSelectedItem().toString());
-        String days = setDays();
-        if(!days.equals("ALL")){
-            intent.putExtra(Course.DAYS_OFFERED, days);
-        }
-
-        String time = startTimeSpinner.getSelectedItem().toString() + "-" +
-                endTimeSpinner.getSelectedItem().toString();
-        if(!time.contains("Any Time")){
-            intent.putExtra(Course.TIME_SLOT, time);
-        }
-
-        if((time.split("-")[0].equals("Any Time")
-                && !time.split("-")[1].equals("Any Time"))
-                || (!time.split("-")[0].equals("Any Time")
-                && time.split("-")[1].equals("Any Time"))){
-            Toast.makeText(getApplicationContext(),
-                    "If specifying a time you must use both a start and end.",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-        intent.putExtra(SuggestionListActivity.SEARCH, true);
-        startActivity(intent);
-
-    }
-
     //set default user location to unb fred in case they dont give location permission or do not
     //have them running
     private double currentLat = Location.FR_LAT;
@@ -144,15 +109,20 @@ public class MainActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient client;
 
+    private List<BlacklistItem> blacklistItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        client = LocationServices.getFusedLocationProviderClient(this);
+        try{
+            Cursor c = new BlacklistTask().execute().get();
+        } catch (Exception e){
+            Log.i(TAG, "unable to get the blacklist database");
+        }
 
-        requestPermissions();
+        client = LocationServices.getFusedLocationProviderClient(this);
 
         defaultDOWButton = getResources().getDrawable(R.drawable.day_of_week_button);
         selectedDOWButton = getResources().getDrawable(R.drawable.day_of_week_selected_button);
@@ -258,6 +228,53 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }//end onCreate()
+
+    public void submit() {
+        Intent intent = new Intent(getApplicationContext(), SuggestionListActivity.class);
+        intent.putExtra(UNBAccess.ACTION, ACTION);
+        intent.putExtra(UNBAccess.NON_CREDIT, NON_CREDIT);
+        intent.putExtra(UNBAccess.LEVEL, LEVEL);
+        intent.putExtra(UNBAccess.FORMAT, FORMAT);
+
+        String location = "location=" + Location.getLocationByName(
+                locationSpinner.getSelectedItem().toString(),currentLat, currentLon).getId();
+        intent.putExtra(UNBAccess.LOCATION, location);
+
+        String term = "term=" + new Semester(
+                semesterSpinner.getSelectedItem().toString()).getTag();
+        intent.putExtra(UNBAccess.TERM, term);
+
+        String subject = "subject=" + facultyList.get(
+                facultySpinner.getSelectedItemPosition()).getPrefix();
+        intent.putExtra(UNBAccess.SUBJECT, subject);
+        intent.putExtra(Course.COURSE_LEVEL, levelSpinner.getSelectedItem().toString());
+        String days = setDays();
+        if(!days.equals("ALL")){
+            intent.putExtra(Course.DAYS_OFFERED, days);
+        }
+
+        String time = startTimeSpinner.getSelectedItem().toString() + "-" +
+                endTimeSpinner.getSelectedItem().toString();
+        if(!time.contains("Any Time")){
+            intent.putExtra(Course.TIME_SLOT, time);
+        }
+
+        if((time.split("-")[0].equals("Any Time")
+                && !time.split("-")[1].equals("Any Time"))
+                || (!time.split("-")[0].equals("Any Time")
+                && time.split("-")[1].equals("Any Time"))){
+            Toast.makeText(getApplicationContext(),
+                    "If specifying a time you must use both a start and end.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        intent.putExtra(SuggestionListActivity.SEARCH, true);
+        Gson gson = new Gson();
+        String blacklistJson = gson.toJson(blacklistItems);
+        intent.putExtra(SuggestionListActivity.BLACKLIST, blacklistJson);
+        startActivity(intent);
+
+    }
 
     /**
      * checks for network connectivity. if non, notify the user and close the app.
@@ -374,30 +391,7 @@ public class MainActivity extends AppCompatActivity {
      *     try to detect location
      */
     private void populateLocationSpinner(){
-        locationSpinner = findViewById(R.id.location_spinner);
         requestPermissions();
-
-        List<String> names = new ArrayList<>();
-
-        Location nearest = Location.getAllLocations(currentLat, currentLon).get(0);
-        for(Location l : Location.getAllLocations(currentLat, currentLon)){
-            if(nearest.findDistance() > l.findDistance()){
-                nearest = l;
-            }
-        }
-
-        names.add(nearest.getName());
-        for(Location l : Location.getAllLocations(currentLat, currentLon)){
-            if(!l.equals(nearest)){
-                names.add(l.getName());
-            }
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, names);
-
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        locationSpinner.setAdapter(adapter);
     }
 
     /**
@@ -464,22 +458,96 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void getLocation(){
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED){
-            client.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<android.location.Location>() {
+    private void getLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            Task locationTask = client.getLastLocation();
+            locationTask.addOnCompleteListener(this, new OnCompleteListener<android.location.Location>() {
                 @Override
-                public void onSuccess(android.location.Location location) {
-                    if(location != null){
-                        Log.i(TAG, "GPS Coordinates: ("
-                                + location.getLatitude() + ", "
-                                + location.getLongitude() + ")");
-                        currentLat = location.getLatitude();
-                        currentLon = location.getLongitude();
+                public void onComplete(@NonNull Task<android.location.Location> task) {
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "device location found");
+                        android.location.Location current = task.getResult();
+                        Log.i(TAG, "Current location coordinates: (" + current.getLatitude() + ", " + current.getLongitude() + ")");
+                        currentLat = current.getLatitude();
+                        currentLon = current.getLongitude();
+
+                        locationSpinner = findViewById(R.id.location_spinner);
+
+                        List<String> names = new ArrayList<>();
+
+                        Location nearest = Location.getAllLocations(currentLat, currentLon).get(0);
+                        for(Location l : Location.getAllLocations(currentLat, currentLon)){
+                            if(nearest.findDistance() > l.findDistance()){
+                                nearest = l;
+                            }
+                        }
+
+                        Log.i(TAG, "List order: ");
+                        names.add(nearest.getName());
+                        Log.i(TAG, nearest.getName());
+                        for(Location l : Location.getAllLocations(currentLat, currentLon)){
+                            if(!l.equals(nearest)){
+                                Log.i(TAG, l.getName());
+                                names.add(l.getName());
+                            }
+                        }
+
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                                MainActivity.this, android.R.layout.simple_spinner_item, names);
+
+                        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                        locationSpinner.setAdapter(adapter);
+                    }
+                    else{
+                        Log.i(TAG, "unable to gather device location. using default");
+                        locationSpinner = findViewById(R.id.location_spinner);
+
+                        List<String> names = new ArrayList<>();
+
+                        Location nearest = Location.getAllLocations(currentLat, currentLon).get(0);
+                        for(Location l : Location.getAllLocations(currentLat, currentLon)){
+                            if(nearest.findDistance() > l.findDistance()){
+                                nearest = l;
+                            }
+                        }
+
+                        Log.i(TAG, "List order: ");
+                        names.add(nearest.getName());
+                        Log.i(TAG, nearest.getName());
+                        for(Location l : Location.getAllLocations(currentLat, currentLon)){
+                            if(!l.equals(nearest)){
+                                Log.i(TAG, l.getName());
+                                names.add(l.getName());
+                            }
+                        }
+
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                                MainActivity.this, android.R.layout.simple_spinner_item, names);
+
+                        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                        locationSpinner.setAdapter(adapter);
                     }
                 }
             });
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(mShakeEventHandler, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
+        try{
+            Cursor c = new BlacklistTask().execute().get();
+        } catch (Exception e){
+            Log.i(TAG, "unable to get the blacklist database");
+        }
+    }
+
+    @Override
+    public void onPause() {
+        mSensorManager.unregisterListener(mShakeEventHandler);
+        super.onPause();
     }
 
     public class FacultyDownloader extends AsyncTask<String, Integer, String> {
@@ -512,15 +580,32 @@ public class MainActivity extends AppCompatActivity {
             facultySpinner.setAdapter(adapter);
         }
     }
-    @Override
-    public void onResume() {
-        super.onResume();
-        mSensorManager.registerListener(mShakeEventHandler, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
-    }
 
-    @Override
-    public void onPause() {
-        mSensorManager.unregisterListener(mShakeEventHandler);
-        super.onPause();
+    public class BlacklistTask extends AsyncTask<String, Void, Cursor> {
+
+        @Override
+        protected Cursor doInBackground(String... strings) {
+            SQLiteDatabase db =
+                    new BlackListDBHelper(getApplicationContext()).getReadableDatabase();
+
+            return db.rawQuery("SELECT * FROM " + BlackListDBHelper.TABLE_NAME,
+                    null);
+        }
+
+        @Override
+        public void onPostExecute(Cursor result){
+            blacklistItems = new ArrayList<>();
+            if(result.moveToFirst()){
+                while(!result.isAfterLast()){
+                    blacklistItems.add(
+                            new BlacklistItem(
+                                    result.getString(result.getColumnIndex(BlackListDBHelper.TYPE)),
+                                    result.getString(result.getColumnIndex(BlackListDBHelper.NAME))
+                            )
+                    );
+                    result.moveToNext();
+                }
+            }
+        }
     }
 }

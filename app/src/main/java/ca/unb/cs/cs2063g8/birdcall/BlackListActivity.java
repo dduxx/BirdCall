@@ -199,6 +199,7 @@ public class BlackListActivity extends AppCompatActivity {
             }
             else{
                 Toast.makeText(getApplicationContext(),"No results found",Toast.LENGTH_LONG).show();
+                listView.setAdapter(null);
             }
 
 

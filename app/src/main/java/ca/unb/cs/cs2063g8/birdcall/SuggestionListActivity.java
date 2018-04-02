@@ -20,12 +20,17 @@ import android.widget.TextView;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ca.unb.cs.cs2063g8.birdcall.database.BlacklistItem;
 import ca.unb.cs.cs2063g8.birdcall.database.FavouriteDBHelper;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Course;
 import ca.unb.cs.cs2063g8.birdcall.ugrad.Description;
@@ -41,6 +46,7 @@ public class SuggestionListActivity extends AppCompatActivity {
     private final String TAG = "SuggestionListActivity";
     public static final String ANY_LEVEL = "Any Level";
     public static final String SEARCH = "SEARCH";
+    public static final String BLACKLIST = "BLACKLIST";
     private boolean allowWeight;
     private List<Course> courseList;
     private Button rerollButton;
@@ -51,6 +57,8 @@ public class SuggestionListActivity extends AppCompatActivity {
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeEventHandler mShakeEventHandler;
+
+    private List<BlacklistItem> blacklistItems;
 
     @Override
     public void onResume(){
@@ -72,6 +80,7 @@ public class SuggestionListActivity extends AppCompatActivity {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_course_suggestion);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         allowWeight = getIntent().getStringExtra(Course.COURSE_LEVEL).equals(ANY_LEVEL);
         Log.i(TAG, "weighted selection is: " + allowWeight);
         mListView = findViewById(R.id.course_list);
@@ -157,7 +166,11 @@ public class SuggestionListActivity extends AppCompatActivity {
             if(getIntent().getStringExtra(Course.TIME_SLOT) != null){
                 filters.put(Course.TIME_SLOT, getIntent().getStringExtra(Course.TIME_SLOT));
             }
-            courseList = Course.getCourseList(filters, requestParams);
+
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<BlacklistItem>>(){}.getType();
+            blacklistItems = gson.fromJson(getIntent().getStringExtra(BLACKLIST), type);
+            courseList = Course.getCourseList(filters, blacklistItems, requestParams);
 
             return "Download Complete";
         }
@@ -216,17 +229,17 @@ public class SuggestionListActivity extends AppCompatActivity {
                     } catch(MalformedURLException e){
                         result.moveToNext();
                     }
-                    courseList = favourites;
-                    CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, favourites);
-                    mListView.setAdapter(courseListAdapter);
                 }
             }
+            courseList = favourites;
+            CourseListAdapter courseListAdapter = new CourseListAdapter(getApplicationContext(), R.id.course_list, courseList);
+            mListView.setAdapter(courseListAdapter);
             if(courseList != null){
                 count.setText("Courses Found: " + courseList.size());
                 count.setTextColor(Color.BLACK);
             }
             else{
-                count.setText("Courses Found: 0");
+                count.setText("Courses Found: " + 0);
                 count.setTextColor(Color.BLACK);
             }
         }
