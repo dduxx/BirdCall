@@ -1,5 +1,6 @@
 package ca.unb.cs.cs2063g8.birdcall.ugrad;
 
+import android.nfc.Tag;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
@@ -46,10 +47,15 @@ public class Description {
             setResponse();
         }
 
-        Document doc = Jsoup.parse(response);
-        Element description = doc.getElementsByTag("course_description").first();
-        Log.i(TAG, "desc: " + description.text());
-        this.description = description.text();
+        try{
+            Document doc = Jsoup.parse(response);
+            Element description = doc.getElementsByTag("course_description").first();
+            Log.i(TAG, "desc: " + description.text());
+            this.description = description.text();
+        } catch (Exception e) {
+            Log.i(TAG, "error reading from url: " + descriptionUrl.toString());
+            description = "[No Description]";
+        }
     }
 
     public void setPrereqs(){
